@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useFlipStore } from "@/lib/store";
-import { useClaimReward } from "@/hooks/useCoinFlipContract";
+import { useClaimReward } from "@/services/contract.services";
 import { useAccount } from "wagmi";
 
 const MIN_FLIPS_BEFORE_CLAIM = 2;
@@ -35,12 +35,12 @@ export default function ClaimRewardButton() {
     isConnected;
 
   // tick to update countdown once per second
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   useEffect(() => {
     if (msLeft === 0) return;
     const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
-  }, [lastClaimAt]);
+  }, [lastClaimAt, msLeft]);
 
   // Handle successful contract interaction
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function ClaimRewardButton() {
     const mm = String(m).padStart(1, "0");
     const ss = String(s).padStart(2, "0");
     return `${mm}:${ss}`;
-  }, [msLeft, tick]);
+  }, [msLeft]);
 
   const handleClaimReward = async () => {
     if (!canClaim) return;

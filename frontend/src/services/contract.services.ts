@@ -16,10 +16,6 @@ import { coinFlipContractAddress, abi } from "@/contracts/coin-flip.contract";
 };
 
 
- const useContractAddress = () => {
-  const chainId = useChainId();
-  return getContractAddress(chainId);
-};
 
  const useContract = () => {
   const chainId = useChainId();
@@ -34,7 +30,7 @@ import { coinFlipContractAddress, abi } from "@/contracts/coin-flip.contract";
 };
 
 // Hook to claim reward using wallet client
- const useClaimReward = () => {
+export const useClaimReward = () => {
   const { address: contractAddress } = useContract();
   const { address: userAddress } = useAccount();
   const { writeContract, isPending, error, isSuccess } = useWriteContract();
@@ -65,11 +61,3 @@ import { coinFlipContractAddress, abi } from "@/contracts/coin-flip.contract";
   };
 };
 
- const getNetworkInfo = (chainId?: number) => {
-  const networks = {
-    84532: { name: 'Base Sepolia', isTestnet: true },
-    8453: { name: 'Base Mainnet', isTestnet: false },
-  };
-  
-  return networks[chainId as keyof typeof networks] || { name: 'Unknown Network', isTestnet: true };
-};

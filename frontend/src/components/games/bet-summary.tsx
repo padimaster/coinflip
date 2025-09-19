@@ -1,7 +1,7 @@
 "use client";
 import { BetSummaryProps } from "./types";
 
-export default function BetSummary({ betAmount, selectedSide, isPlacingBet, coinState }: BetSummaryProps) {
+export default function BetSummary({ betAmount, selectedSide, isPlacingBet }: BetSummaryProps) {
   if (!selectedSide || isPlacingBet) return null;
 
   return (

@@ -27,7 +27,6 @@ export default function DegenModeGame() {
     placeBet,
     resetGame,
     closeResultModal,
-    canPlaceBet,
     isFlipping,
   } = useDegenGame();
 

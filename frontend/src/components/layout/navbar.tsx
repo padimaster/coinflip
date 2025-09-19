@@ -11,7 +11,7 @@ const navItems = [
   { id: "degen", label: "DEGEN MODE", href: "/degen" },
 ];
 
-export const NavigationMenu: React.FC<{}> = () => {
+export const NavigationMenu: React.FC = () => {
   const pathname = usePathname();
   const activeTab = pathname;
 

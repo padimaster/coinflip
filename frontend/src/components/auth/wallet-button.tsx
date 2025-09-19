@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, type Connector } from "wagmi";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -18,7 +18,7 @@ export default function Wallet() {
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
 
-  const handleConnect = async (connector: any) => {
+  const handleConnect = async (connector: Connector) => {
     try {
       await connect({ connector });
       setOpen(false);

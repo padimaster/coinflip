@@ -1,4 +1,3 @@
-import Image from "next/image";
 import CoinFlipGame from "@/components/games/free/free-mode";
 
 export default function Home() {

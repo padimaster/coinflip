@@ -1,8 +1,6 @@
 import { useAccount, useConnect, useDisconnect, useChainId } from "wagmi";
 import {
-  useMiniKit,
   useIsInMiniApp,
-  useAuthenticate,
 } from "@coinbase/onchainkit/minikit";
 
 export const useWallet = () => {
