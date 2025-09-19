@@ -20,15 +20,15 @@ type FlipStore = {
 };
 
 export const useFlipStore = create<FlipStore>()(
-  persist(
+  persist<FlipStore>(
     (set) => ({
-      mode: "flip",
+      mode: "flip" as const,
       flipsCount: 0,
       history: [],
       lastClaimAt: null,
       flipsSinceLastClaim: 0,
-      setMode: (mode) => set({ mode }),
-      recordFlip: (result) =>
+      setMode: (mode: Mode) => set({ mode }),
+      recordFlip: (result: FlipResult) =>
         set((state) => ({
           flipsCount: state.flipsCount + 1,
           flipsSinceLastClaim: state.flipsSinceLastClaim + 1,
@@ -37,7 +37,7 @@ export const useFlipStore = create<FlipStore>()(
             ...state.history,
           ].slice(0, 1000),
         })),
-      setLastClaimAt: (timestamp) => set({ lastClaimAt: timestamp }),
+      setLastClaimAt: (timestamp: number) => set({ lastClaimAt: timestamp }),
       claimReward: () =>
         set(() => ({
           lastClaimAt: Date.now(),
@@ -48,5 +48,3 @@ export const useFlipStore = create<FlipStore>()(
     { name: "coin-flip-store" }
   )
 );
-
-

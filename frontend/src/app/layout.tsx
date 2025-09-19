@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { NavigationMenu } from "@/components/layout/navbar";
 import { Press_Start_2P } from "next/font/google";
-import Header from "@/components/layout/game-header";
+import { BaseProvider } from "@/providers/base.provider";
+import Header from "@/components/layout/header";
+import WagmiProvider from "@/providers/wagmi-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -10,10 +12,10 @@ export const metadata: Metadata = {
 };
 
 const pressStart2P = Press_Start_2P({
-  weight: '400', // Press Start 2P typically comes in one weight
-  subsets: ['latin'],
-  variable: '--font-press-start-2p', // Define a CSS variable for the font
-  display: 'swap', // Optimize font loading
+  weight: "400", // Press Start 2P typically comes in one weight
+  subsets: ["latin"],
+  variable: "--font-press-start-2p", // Define a CSS variable for the font
+  display: "swap", // Optimize font loading
 });
 
 export default function RootLayout({
@@ -23,9 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased ${pressStart2P.variable} bg-[#070d1f] text-white`}>
-        {children}
-        <NavigationMenu />
+      <body
+        className={`antialiased ${pressStart2P.variable} bg-[#070d1f] text-white`}
+      >
+        <WagmiProvider>
+          <BaseProvider>
+            <Header />
+            {children}
+            <NavigationMenu />
+          </BaseProvider>
+        </WagmiProvider>
       </body>
     </html>
   );

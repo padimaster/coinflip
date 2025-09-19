@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^1.0.2",
     "@radix-ui/react-slot": "^1.2.3",
+    "@tanstack/react-query": "^5.89.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
@@ -17,6 +19,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.3.1",
+    "viem": "~2.37.6",
+    "wagmi": "^2.17.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
