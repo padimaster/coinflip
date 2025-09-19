@@ -6,6 +6,7 @@ import { CoinState } from "@/lib/types";
 import { useFlipStore } from "@/lib/store";
 import Coin from "../coin/coin";
 import ClaimRewardButton from "./claim-reward.button";
+import RecentFlips from "./recent-flips";
 
 export default function CoinFlipGame() {
   const [state, setState] = useState<CoinState>({
@@ -53,6 +54,9 @@ export default function CoinFlipGame() {
       <Button variant="kawaii" onClick={handleFlipClick}>
         Flip
       </Button>
+
+      <RecentFlips history={useFlipStore((state) => state.history)} />
+
     </div>
   );
 }
