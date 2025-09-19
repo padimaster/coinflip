@@ -7,7 +7,12 @@
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
     "start": "pnpm --filter frontend start",
-    "lint": "pnpm --filter frontend lint"
+    "lint": "pnpm --filter frontend lint",
+    "deploy:sepolia": "./scripts/deploy-to-sepolia.sh",
+    "deploy:mainnet": "./scripts/deploy-to-mainnet.sh",
+    "post-deploy": "node scripts/post-deploy.js 84532",
+    "post-deploy:base": "node scripts/post-deploy.js 8453",
+    "deploy:help": "./scripts/help.sh"
   },
   "devDependencies": {},
   "engines": {
