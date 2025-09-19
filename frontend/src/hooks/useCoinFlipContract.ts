@@ -30,7 +30,13 @@ export const useContract = () => {
 export const useClaimReward = () => {
   const { address: contractAddress } = useContract();
   const { address: userAddress } = useAccount();
-  const { writeContract, isPending, error, isSuccess } = useWriteContract();
+  const {
+    data: hash,
+    writeContract,
+    isPending,
+    error,
+    isSuccess,
+  } = useWriteContract();
 
   const claimReward = async () => {
     if (!contractAddress || !userAddress) {
@@ -38,14 +44,14 @@ export const useClaimReward = () => {
     }
 
     try {
-      const result = await writeContract({
+      writeContract({
         address: contractAddress as `0x${string}`,
         abi,
         functionName: "claimReward",
         args: [userAddress as `0x${string}`],
       });
 
-      console.log("result", result);
+      console.log("hash", hash);
     } catch (err) {
       console.error("Error claiming reward:", err);
       throw err;

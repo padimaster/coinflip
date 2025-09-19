@@ -10,14 +10,14 @@ interface CoinProps {
 
 export default function Coin({ state, result }: CoinProps) {
   return (
-    <div className="coin-container cursor-pointer transition-all duration-300 hover:scale-105">
-      {state === "initial" && <HeadCoin size={200} />}
-      {state === "flipping" && <FlippingCoin size={200} />}
+    <div className="h-40 w-40 coin-container cursor-pointer transition-all duration-300 hover:scale-105">
+      {state === "initial" && <HeadCoin size={100} />}
+      {state === "flipping" && <FlippingCoin size={100} />}
       {state === "result" &&
         (result === "heads" ? (
-          <HeadCoin size={200} />
+          <HeadCoin size={100} />
         ) : (
-          <TailCoin size={200} />
+          <TailCoin size={100} />
         ))}
     </div>
   );

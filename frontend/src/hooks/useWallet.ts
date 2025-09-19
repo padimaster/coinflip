@@ -13,10 +13,6 @@ export const useWallet = () => {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const coinbaseConnector = connectors.find(
-    (connector) => connector.name === "Coinbase Wallet"
-  );
-
   const connectWallet = async () => {
     try {
       const coinbaseConnector = connectors.find(
@@ -52,6 +48,8 @@ export const useWallet = () => {
       }
     );
   };
+
+  console.log(getCurrentNetwork());
 
   return {
     isInMiniApp,

@@ -74,9 +74,9 @@ export default function ClaimRewardButton() {
 
     try {
       const result = await contractClaimReward();
-      console.log("Reward claimed successfully!", result);
 
       claimRewardStore();
+      console.log("Reward claimed successfully!", result);
     } catch (err) {
       console.error("Failed to claim reward:", err);
     } finally {
