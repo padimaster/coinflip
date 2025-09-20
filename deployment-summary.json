@@ -1,0 +1,19 @@
+{
+  "timestamp": "2025-09-20T06:37:38.680Z",
+  "network": "local-anvil",
+  "chainId": 31337,
+  "contractAddress": "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
+  "contractName": "FlipToEarnFaucet",
+  "deploymentConfig": {
+    "minFlipsRequired": 5,
+    "dailyClaimsLimit": 100,
+    "dropAmount": "0.001 ETH",
+    "cooldownPeriod": "24 hours",
+    "signatureExpiration": "1 hour"
+  },
+  "files": {
+    "contractConfig": "/Users/alexpadilla/projects/base/coin-flip/apps/miniapp/src/contracts/coin-flip.contract.ts",
+    "envLocal": "/Users/alexpadilla/projects/base/coin-flip/apps/miniapp/.env.local",
+    "summary": "/Users/alexpadilla/projects/base/coin-flip/deployment-summary.json"
+  }
+}

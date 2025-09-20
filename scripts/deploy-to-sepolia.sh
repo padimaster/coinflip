@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 CHAIN_ID="84532"  # Base Sepolia
 NETWORK="base-sepolia"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONTRACTS_DIR="$PROJECT_ROOT/contracts"
+CONTRACTS_DIR="$PROJECT_ROOT/packages/contracts"
 
 echo -e "${BLUE}🚀 Iniciando despliegue a Base Sepolia...${NC}"
 echo -e "${BLUE}📁 Directorio del proyecto: $PROJECT_ROOT${NC}"
@@ -77,7 +77,7 @@ echo -e "${BLUE}📡 Network: $NETWORK (Chain ID: $CHAIN_ID)${NC}"
 
 # Intentar desplegar con verificación
 echo -e "${YELLOW}🔍 Intentando desplegar con verificación...${NC}"
-forge script script/CoinFlip.s.sol:CoinFlipScript \
+forge script script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript \
     --rpc-url "$NETWORK" \
     --broadcast \
     --verify \
@@ -90,7 +90,7 @@ if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
     echo -e "${YELLOW}⚠️  Despliegue con verificación falló, intentando sin verificación...${NC}"
     
     # Intentar desplegar sin verificación
-    forge script script/CoinFlip.s.sol:CoinFlipScript \
+    forge script script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript \
         --rpc-url "$NETWORK" \
         --broadcast \
         -vvvv
@@ -132,12 +132,12 @@ fi
 echo -e "${GREEN}🎉 ¡Despliegue completado exitosamente!${NC}"
 echo -e "${BLUE}📝 Resumen del despliegue:${NC}"
 echo -e "   • Network: Base Sepolia ($CHAIN_ID)"
-echo -e "   • Contrato: CoinFlip"
-echo -e "   • ABI actualizado en: frontend/src/contracts/coin-flip.contract.ts"
-echo -e "   • Dirección del contrato en: frontend/.env.local"
+echo -e "   • Contrato: FlipToEarnFaucet"
+echo -e "   • ABI actualizado en: apps/miniapp/src/contracts/coin-flip.contract.ts"
+echo -e "   • Dirección del contrato en: apps/miniapp/.env.local"
 echo -e ""
 echo -e "${YELLOW}💡 Próximos pasos:${NC}"
-echo -e "   1. Verifica que la variable NEXT_PUBLIC_COIN_FLIP_CONTRACT_ADDRESS esté en tu .env.local"
+echo -e "   1. Verifica que la variable NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA esté en tu .env.local"
 echo -e "   2. Reinicia tu servidor de desarrollo si está corriendo"
 echo -e "   3. ¡Tu frontend ya puede interactuar con el contrato desplegado!"
 echo -e ""
