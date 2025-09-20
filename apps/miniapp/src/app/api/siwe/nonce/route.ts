@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
-import { generateSiweNonce } from "viem/siwe";
+
+let sequenceCounter = 0;
 
 export async function GET() {
-  const nonce = generateSiweNonce();
+  sequenceCounter++;
+  const nonce = BigInt(sequenceCounter);
 
-  return NextResponse.json({ nonce });
+  return NextResponse.json({ nonce: nonce.toString() });
 }

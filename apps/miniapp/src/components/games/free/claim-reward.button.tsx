@@ -15,13 +15,7 @@ export default function ClaimRewardButton() {
 
   // Contract interaction hooks
   const { isConnected } = useAccount();
-  const {
-    claimReward,
-    claimRewardWithSiwe: contractClaimRewardWithSiwe,
-    isPending,
-    error,
-    isSuccess,
-  } = useClaimReward();
+  const { claimReward, isPending, error, isSuccess } = useClaimReward();
 
   const COOLDOWN_MS = 3000;
 
@@ -74,7 +68,7 @@ export default function ClaimRewardButton() {
     console.log("Claiming reward via contract");
 
     try {
-      const result = await contractClaimRewardWithSiwe();
+      const result = await claimReward();
 
       claimRewardStore();
       console.log("Reward claimed successfully!", result);

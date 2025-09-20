@@ -1,7 +1,11 @@
-import { useAccount, useConnect, useDisconnect, useChainId } from "wagmi";
 import {
-  useIsInMiniApp,
-} from "@coinbase/onchainkit/minikit";
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useChainId,
+  useSwitchChain,
+} from "wagmi";
+import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 export const useWallet = () => {
   const isInMiniApp = useIsInMiniApp();
@@ -10,6 +14,7 @@ export const useWallet = () => {
   const { address, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
+  const { switchChain } = useSwitchChain();
 
   const connectWallet = async () => {
     try {
@@ -32,11 +37,21 @@ export const useWallet = () => {
     disconnect();
   };
 
+  const switchNetwork = async (targetChainId: number) => {
+    try {
+      await switchChain({ chainId: targetChainId as 31337 | 8453 | 84532 });
+    } catch (error) {
+      console.error("Failed to switch network:", error);
+      throw error;
+    }
+  };
+
   // Network detection
   const getCurrentNetwork = () => {
     const networks = {
       84532: { name: "Base Sepolia", isTestnet: true },
       8453: { name: "Base Mainnet", isTestnet: false },
+      31337: { name: "Foundry Network", isTestnet: true },
     };
 
     return (
@@ -47,13 +62,12 @@ export const useWallet = () => {
     );
   };
 
-  console.log(getCurrentNetwork());
-
   return {
     isInMiniApp,
     isConnected,
     connectWallet,
     disconnectWallet,
+    switchNetwork,
     address,
     chainId,
     currentNetwork: getCurrentNetwork(),

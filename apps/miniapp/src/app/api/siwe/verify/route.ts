@@ -1,3 +1,4 @@
+import { claimReward } from "@/services/backend/contract.services";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyTypedData } from "viem";
 
@@ -16,10 +17,12 @@ export async function POST(req: NextRequest) {
       address,
       domain,
       types,
-      primaryType: "Flip",
+      primaryType: "ClaimData",
       message,
       signature,
     });
+
+    console.log("verified", verified);
 
     if (!verified) {
       return NextResponse.json(
@@ -28,9 +31,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    
+    const result = await claimReward(
+      address,
+      BigInt(message.flipCount),
+      BigInt(message.minFlipsRequired),
+      BigInt(message.timestamp),
+      BigInt(message.nonce),
+      signature,
+      domain.verifyingContract,
+      domain.chainId
+    );
 
-    return NextResponse.json({ verified });
+    console.log("result", result);
+
+    return NextResponse.json({ verified, result });
   } catch (error) {
     console.error("SIWE verification error:", error);
     return NextResponse.json(

@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAccount, useConnect, useDisconnect, type Connector } from "wagmi";
+import {
+  useAccount,
+  useChainId,
+  useConnect,
+  useDisconnect,
+  type Connector,
+} from "wagmi";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -11,12 +17,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { useWallet } from "@/hooks/useWallet";
+import { NetworkSwitcher } from "../layout/network-switcher";
 
 export default function Wallet() {
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
+  const { currentNetwork } = useWallet();
+  console.log("currentNetwork", currentNetwork);
 
   const handleConnect = async (connector: Connector) => {
     try {
@@ -34,12 +44,12 @@ export default function Wallet() {
 
   const getWalletIcon = (name: string) => {
     switch (name.toLowerCase()) {
-      case 'coinbase wallet':
-        return '🟦';
-      case 'metamask':
-        return '🦊';
+      case "coinbase wallet":
+        return "🟦";
+      case "metamask":
+        return "🦊";
       default:
-        return '🔗';
+        return "🔗";
     }
   };
 
@@ -54,7 +64,9 @@ export default function Wallet() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-[rgba(7,13,31,0.95)] backdrop-blur-[10px] border-gray-600">
             <DialogHeader>
-              <DialogTitle className="text-white font-press-start-2p text-sm">CHOOSE WALLET</DialogTitle>
+              <DialogTitle className="text-white font-press-start-2p text-sm">
+                CHOOSE WALLET
+              </DialogTitle>
               <DialogDescription className="text-gray-300 text-xs">
                 Select a wallet to connect to your account.
               </DialogDescription>
@@ -67,7 +79,9 @@ export default function Wallet() {
                   onClick={() => handleConnect(connector)}
                   className="w-full flex items-center gap-3 justify-start text-sm font-press-start-2p"
                 >
-                  <span className="text-lg">{getWalletIcon(connector.name)}</span>
+                  <span className="text-lg">
+                    {getWalletIcon(connector.name)}
+                  </span>
                   <span>{connector.name.toUpperCase()}</span>
                 </Button>
               ))}
@@ -75,11 +89,17 @@ export default function Wallet() {
           </DialogContent>
         </Dialog>
       )}
-      
+
       {isConnected && (
-        <Button onClick={handleDisconnect} variant="kawaii" className="font-press-start-2p text-sm">
-          SIGN OUT
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button
+            onClick={handleDisconnect}
+            variant="kawaii"
+            className="font-press-start-2p text-sm"
+          >
+            SIGN OUT
+          </Button>
+        </div>
       )}
     </>
   );
