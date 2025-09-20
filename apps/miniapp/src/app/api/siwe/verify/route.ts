@@ -6,6 +6,8 @@ export async function POST(req: NextRequest) {
   try {
     const { address, message, signature, domain, types } = await req.json();
 
+    console.log("Received request:", { address, message, signature, domain, types });
+
     if (!address || !message || !signature || !domain || !types) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -30,6 +32,46 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Validate message values before converting to BigInt
+    if (typeof message.flipCount !== 'number' || isNaN(message.flipCount)) {
+      return NextResponse.json(
+        { error: "Invalid flipCount value" },
+        { status: 400 }
+      );
+    }
+    
+    if (typeof message.minFlipsRequired !== 'number' || isNaN(message.minFlipsRequired)) {
+      return NextResponse.json(
+        { error: "Invalid minFlipsRequired value" },
+        { status: 400 }
+      );
+    }
+    
+    if (typeof message.timestamp !== 'number' || isNaN(message.timestamp)) {
+      return NextResponse.json(
+        { error: "Invalid timestamp value" },
+        { status: 400 }
+      );
+    }
+    
+    if (typeof message.nonce !== 'number' || isNaN(message.nonce)) {
+      return NextResponse.json(
+        { error: "Invalid nonce value" },
+        { status: 400 }
+      );
+    }
+
+    console.log("About to call claimReward with:", {
+      address,
+      flipCount: message.flipCount,
+      minFlipsRequired: message.minFlipsRequired,
+      timestamp: message.timestamp,
+      nonce: message.nonce,
+      signature,
+      contractAddress: domain.verifyingContract,
+      chainId: domain.chainId
+    });
 
     const result = await claimReward(
       address,

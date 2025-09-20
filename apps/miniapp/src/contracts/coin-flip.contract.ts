@@ -1,7 +1,7 @@
 // Auto-generated contract configuration
-// Generated on: 2025-09-20T05:06:06.556Z
+// Generated on: 2025-09-20T06:37:38.675Z
 // Chain ID: 31337
-// Contract Address: 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512
+// Contract Address: 0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0
 
 export const FAUCET_CONTRACT_ADDRESSES = {
   local: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_LOCAL,

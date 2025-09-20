@@ -1,4 +1,4 @@
-import { localClient } from "@/config/backend.config";
+import { getWalletClient } from "@/config/backend.config";
 import {
   FAUCET_CONTRACT_ABI as abi,
 } from "@/contracts/coin-flip.contract";
@@ -23,7 +23,14 @@ export const claimReward = async (
     console.log("nonce", nonce);
     console.log("signature", signature);
 
-    const result = await localClient.writeContract({
+    // Get the appropriate client based on chain ID
+    const client = getWalletClient(chainId);
+
+    if (!contractAddress) {
+      throw new Error("Contract address is required");
+    }
+
+    const result = await client.writeContract({
       address: contractAddress as `0x${string}`,
       abi,
       functionName: "claimReward",

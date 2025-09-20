@@ -33,6 +33,7 @@ const useContract = () => {
   const chainId = useChainId();
   const address = getFlipToEarnFaucetContractAddress(chainId);
 
+  console.log("address", address);
   return {
     address,
     abi,
@@ -48,8 +49,26 @@ export const useClaimReward = () => {
   const { signTypedData } = useSignTypedData();
 
   const claimReward = async () => {
-    const nonce = await fetch("/api/siwe/nonce");
+    // Validate required values
+    if (!chainId) {
+      throw new Error("Chain ID is required. Please connect your wallet.");
+    }
+    
+    if (!userAddress) {
+      throw new Error("User address is required. Please connect your wallet.");
+    }
+
+    if (!contractAddress) {
+      throw new Error("Contract address not found for the current chain.");
+    }
+
+    const nonce = await fetch(`/api/siwe/nonce?userAddress=${userAddress}&chainId=${chainId}`);
     const { nonce: nonceData } = await nonce.json();
+
+    // Validate nonce data
+    if (!nonceData || isNaN(parseInt(nonceData))) {
+      throw new Error("Invalid nonce received from server.");
+    }
 
     // EIP-712 Domain definition
     const domain: EIP712Domain = {
@@ -92,6 +111,9 @@ export const useClaimReward = () => {
             try {
               const verified = await fetch("/api/siwe/verify", {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
                 body: JSON.stringify({
                   address: userAddress,
                   message,
@@ -100,10 +122,16 @@ export const useClaimReward = () => {
                   types,
                 }),
               });
+              
+              if (!verified.ok) {
+                throw new Error(`Verification failed: ${verified.statusText}`);
+              }
+              
               const { verified: verifiedData, result } = await verified.json();
 
               resolve({ message, signature, verified: verifiedData, result });
             } catch (error) {
+              console.error("Error in verification process:", error);
               reject(error);
             }
           },
