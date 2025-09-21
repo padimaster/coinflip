@@ -1,7 +1,4 @@
-import { createWalletClient, http } from "viem";
 import { defineChain } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { base, baseSepolia } from "viem/chains";
 
 export const customFoundryNetwork = defineChain({
   id: 31337,

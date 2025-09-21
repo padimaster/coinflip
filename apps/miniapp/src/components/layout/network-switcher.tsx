@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronDown, Network } from "lucide-react";
+import { Network } from "lucide-react";
 
 const NETWORKS = [
   { id: 8453, name: "Base" },
@@ -19,7 +19,7 @@ const NETWORKS = [
 ];
 
 export function NetworkSwitcher() {
-  const { chainId, switchNetwork, isConnected, currentNetwork } = useWallet();
+  const { chainId, switchNetwork, isConnected } = useWallet();
   const [open, setOpen] = useState(false);
 
   if (!isConnected) {

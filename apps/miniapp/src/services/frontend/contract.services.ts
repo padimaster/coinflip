@@ -3,7 +3,6 @@ import { useChainId, useWriteContract, useAccount } from "wagmi";
 import { FLIP_TO_EARN_FAUCET_CONTRACT_ABI as abi } from "@/contracts/abis";
 import { useSignTypedData } from "wagmi";
 import { getFlipToEarnFaucetContractAddress } from "@/services/common/contracts.lib";
-import { getClaimRewardSignedTypedData } from "../sign/sign.lib";
 import { useFlipStore } from "@/lib/store";
 
 const useContract = () => {

@@ -3,7 +3,6 @@ import {
   createConfig,
   createStorage,
   http,
-  custom,
 } from "wagmi";
 import { base, baseSepolia } from "wagmi/chains";
 import { coinbaseWallet, metaMask } from "wagmi/connectors";

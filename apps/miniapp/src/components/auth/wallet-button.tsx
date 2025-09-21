@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import {
   useAccount,
-  useChainId,
   useConnect,
   useDisconnect,
   type Connector,
@@ -17,8 +16,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { useWallet } from "@/hooks/useWallet";
-import { NetworkSwitcher } from "../layout/network-switcher";
 import { Link, LogOut } from "lucide-react";
 
 export default function Wallet() {
@@ -26,8 +23,6 @@ export default function Wallet() {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
-  const { currentNetwork } = useWallet();
-  console.log("currentNetwork", currentNetwork);
 
   const handleConnect = async (connector: Connector) => {
     try {

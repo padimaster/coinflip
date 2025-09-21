@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+
+// Force dynamic rendering to prevent prerendering issues
+export const dynamic = 'force-dynamic';
 
 export default function NotFound() {
   return (
@@ -30,7 +35,7 @@ export default function NotFound() {
             Looks like this page got flipped away! 🪙
           </p>
           <p className="text-gray-400">
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
         </div>
 
