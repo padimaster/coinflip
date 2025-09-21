@@ -14,6 +14,8 @@
     "post-deploy:sepolia": "echo '⚠️  This script is called automatically by deploy:sepolia. Run pnpm run deploy:sepolia instead.'",
     "post-deploy:mainnet": "echo '⚠️  This script is called automatically by deploy:mainnet. Run pnpm run deploy:mainnet instead.'",
     "post-deploy:local": "echo '⚠️  This script is called automatically by deploy:local. Run pnpm run deploy:local instead.'",
+    "compile:abi": "node scripts/compile-and-update-abi.js",
+    "validate:abi": "node scripts/validate-abi.js",
     "deploy:help": "./scripts/help.sh"
   },
   "devDependencies": {},

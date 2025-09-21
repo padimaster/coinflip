@@ -52,18 +52,21 @@ export const FAUCET_CONTRACT_ADDRESSES = {
   base: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET,
 } as const;
 
-export const FAUCET_CONTRACT_ABI = ${JSON.stringify(abi, null, 2)} as const;
+export const FLIP_TO_EARN_FAUCET_CONTRACT_ABI = ${JSON.stringify(abi, null, 2)} as const;
+
+// Legacy export for backward compatibility
+export const FAUCET_CONTRACT_ABI = FLIP_TO_EARN_FAUCET_CONTRACT_ABI;
 
 // Contract configuration
 export const FAUCET_CONFIG = {
   addresses: FAUCET_CONTRACT_ADDRESSES,
-  abi: FAUCET_CONTRACT_ABI,
+  abi: FLIP_TO_EARN_FAUCET_CONTRACT_ABI,
   chainId: ${chainId},
   network: 'local-anvil',
 } as const;
 
 // Contract function signatures for type safety
-export type FaucetContract = typeof FAUCET_CONTRACT_ABI;
+export type FaucetContract = typeof FLIP_TO_EARN_FAUCET_CONTRACT_ABI;
 `;
 
 // Write the contract configuration

@@ -5,13 +5,13 @@ const path = require('path');
 
 /**
  * Script para automatizar la actualización del ABI y dirección del contrato
- * después de desplegar en Base Mainnet
+ * después de desplegar en Base Sepolia
  * 
- * Uso: node scripts/post-deploy-mainnet.js [chainId]
- * Ejemplo: node scripts/post-deploy-mainnet.js 8453
+ * Uso: node scripts/post-deploy-sepolia.js [chainId]
+ * Ejemplo: node scripts/post-deploy-sepolia.js 84532
  */
 
-const CHAIN_ID = process.argv[2] || '8453'; // Base Mainnet por defecto
+const CHAIN_ID = process.argv[2] || '84532'; // Base Sepolia por defecto
 const PROJECT_ROOT = path.join(__dirname, '..');
 const CONTRACTS_DIR = path.join(PROJECT_ROOT, 'packages', 'contracts');
 const FRONTEND_DIR = path.join(PROJECT_ROOT, 'apps', 'miniapp');
@@ -22,7 +22,7 @@ const BROADCAST_DIR = path.join(CONTRACTS_DIR, 'broadcast', 'FlipToEarnFaucet.s.
 const CONTRACT_DEST = path.join(FRONTEND_DIR, 'src', 'contracts', 'abis.ts');
 const ENV_FILE = path.join(FRONTEND_DIR, '.env.local');
 
-console.log('🚀 Iniciando actualización post-despliegue para Base Mainnet...');
+console.log('🚀 Iniciando actualización post-despliegue para Base Sepolia...');
 console.log(`📡 Chain ID: ${CHAIN_ID}`);
 
 /**
@@ -146,7 +146,7 @@ function updateContractFile(abi) {
         const contractContent = `// ⚠️  AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Generated on: ${new Date().toISOString()}
 // Chain ID: ${CHAIN_ID}
-// Network: Base Mainnet
+// Network: Base Sepolia
 // This file is automatically updated by post-deploy scripts
 // Manual edits will be overwritten on next deployment
 
@@ -183,11 +183,11 @@ function updateEnvFile(contractAddress) {
             },
             {
                 name: 'NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA',
-                value: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA || ''
+                value: contractAddress // This is the current deployment
             },
             {
                 name: 'NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET',
-                value: contractAddress // This is the current deployment
+                value: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET || ''
             }
         ];
         
@@ -207,7 +207,7 @@ function updateEnvFile(contractAddress) {
         
         fs.writeFileSync(ENV_FILE, envContent, 'utf8');
         console.log(`✅ Archivo .env.local actualizado: ${ENV_FILE}`);
-        console.log(`   • NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET=${contractAddress}`);
+        console.log(`   • NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA=${contractAddress}`);
     } catch (error) {
         console.error('❌ Error al actualizar archivo .env:', error.message);
         process.exit(1);
@@ -239,7 +239,7 @@ function main() {
         console.log(`   • ABI actualizado en: ${path.relative(PROJECT_ROOT, CONTRACT_DEST)}`);
         console.log(`   • Variable de entorno en: ${path.relative(PROJECT_ROOT, ENV_FILE)}`);
         console.log('\n💡 Próximos pasos:');
-        console.log('   1. Verifica que la variable NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET esté en tu .env.local');
+        console.log('   1. Verifica que la variable NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA esté en tu .env.local');
         console.log('   2. Reinicia tu servidor de desarrollo si está corriendo');
         console.log('   3. ¡Tu frontend ya puede interactuar con el contrato desplegado!');
         

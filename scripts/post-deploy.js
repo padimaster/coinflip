@@ -19,7 +19,7 @@ const FRONTEND_DIR = path.join(PROJECT_ROOT, 'apps', 'miniapp');
 // Rutas de archivos
 const ABI_SOURCE = path.join(CONTRACTS_DIR, 'out', 'FlipToEarnFaucet.sol', 'FlipToEarnFaucet.json');
 const BROADCAST_DIR = path.join(CONTRACTS_DIR, 'broadcast', 'FlipToEarnFaucet.s.sol', CHAIN_ID);
-const CONTRACT_DEST = path.join(FRONTEND_DIR, 'src', 'contracts', 'coin-flip.contract.ts');
+const CONTRACT_DEST = path.join(FRONTEND_DIR, 'src', 'contracts', 'abis.ts');
 const ENV_FILE = path.join(FRONTEND_DIR, '.env.local');
 
 console.log('🚀 Iniciando actualización post-despliegue...');
@@ -92,38 +92,73 @@ function extractABI() {
 }
 
 /**
+ * Valida que el ABI tenga las funciones esenciales
+ */
+function validateABI(abi) {
+    // Funciones esenciales que deben existir en el contrato FlipToEarnFaucet
+    const requiredFunctions = [
+        'claimReward',
+        'getUserNonce', 
+        'getDailyClaimsLimit',
+        'getDailyClaimsCount',
+        'getContractBalance',
+        'getDropAmount'
+    ];
+    
+    const abiFunctions = abi.filter(item => item.type === 'function').map(item => item.name);
+    
+    const missingFunctions = requiredFunctions.filter(func => !abiFunctions.includes(func));
+    
+    if (missingFunctions.length > 0) {
+        throw new Error(`ABI inválido: faltan funciones esenciales: ${missingFunctions.join(', ')}`);
+    }
+    
+    console.log(`✅ ABI validado: ${abiFunctions.length} funciones encontradas`);
+    console.log(`   • Funciones esenciales: ${requiredFunctions.join(', ')}`);
+}
+
+/**
+ * Crea un backup del archivo ABI actual
+ */
+function createABIBackup() {
+    try {
+        if (fs.existsSync(CONTRACT_DEST)) {
+            const backupPath = CONTRACT_DEST.replace('.ts', `.backup.${Date.now()}.ts`);
+            fs.copyFileSync(CONTRACT_DEST, backupPath);
+            console.log(`📦 Backup creado: ${path.basename(backupPath)}`);
+        }
+    } catch (error) {
+        console.warn('⚠️  No se pudo crear backup:', error.message);
+    }
+}
+
+/**
  * Actualiza el archivo de contrato con el ABI
  */
 function updateContractFile(abi) {
     try {
-        const contractContent = `// Auto-generated contract configuration
+        // Validar ABI antes de escribir
+        validateABI(abi);
+        
+        // Crear backup del archivo actual
+        createABIBackup();
+        
+        const contractContent = `// ⚠️  AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
 // Generated on: ${new Date().toISOString()}
 // Chain ID: ${CHAIN_ID}
+// Network: Base Sepolia
+// This file is automatically updated by post-deploy scripts
+// Manual edits will be overwritten on next deployment
 
-export const FAUCET_CONTRACT_ADDRESSES = {
-  local: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_LOCAL,
-  baseSepolia: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA,
-  base: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET,
-} as const;
+export const FLIP_TO_EARN_FAUCET_CONTRACT_ABI = ${JSON.stringify(abi, null, 2)} as const;
 
-export const FAUCET_CONTRACT_ABI = ${JSON.stringify(abi, null, 2)} as const;
-
-// Contract configuration
-export const FAUCET_CONFIG = {
-  addresses: FAUCET_CONTRACT_ADDRESSES,
-  abi: FAUCET_CONTRACT_ABI,
-  chainId: ${CHAIN_ID},
-  network: 'base-sepolia',
-} as const;
-
-// Contract function signatures for type safety
-export type FaucetContract = typeof FAUCET_CONTRACT_ABI;
+export type FlipToEarnFaucetContract = typeof FLIP_TO_EARN_FAUCET_CONTRACT_ABI;
 `;
         
         fs.writeFileSync(CONTRACT_DEST, contractContent, 'utf8');
-        console.log(`✅ Archivo de contrato actualizado: ${CONTRACT_DEST}`);
+        console.log(`✅ Archivo ABI actualizado: ${CONTRACT_DEST}`);
     } catch (error) {
-        console.error('❌ Error al actualizar archivo de contrato:', error.message);
+        console.error('❌ Error al actualizar archivo ABI:', error.message);
         process.exit(1);
     }
 }

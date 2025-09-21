@@ -28,6 +28,11 @@ echo -e "  ${YELLOW}pnpm run post-deploy${NC}        - Actualizar archivos (Base
 echo -e "  ${YELLOW}pnpm run post-deploy:base${NC}   - Actualizar archivos (Base Mainnet)"
 echo ""
 
+echo -e "${GREEN}🔨 Compilación y ABI:${NC}"
+echo -e "  ${YELLOW}pnpm run compile:abi${NC}        - Compilar contrato y actualizar ABI"
+echo -e "  ${YELLOW}pnpm run validate:abi${NC}       - Validar consistencia del ABI"
+echo ""
+
 echo -e "${GREEN}📁 Scripts Directos:${NC}"
 echo -e "  ${YELLOW}./scripts/deploy-to-sepolia.sh${NC}  - Despliegue completo a Sepolia"
 echo -e "  ${YELLOW}./scripts/deploy-to-mainnet.sh${NC}  - Despliegue completo a Mainnet"
@@ -49,8 +54,8 @@ echo -e "  ${YELLOW}export ETHERSCAN_API_KEY=\"...\"${NC}"
 echo ""
 
 echo -e "${BLUE}📝 Archivos que se Actualizan:${NC}"
-echo -e "  ${YELLOW}frontend/src/contracts/coin-flip.contract.ts${NC} - ABI del contrato"
-echo -e "  ${YELLOW}frontend/.env.local${NC} - Dirección del contrato"
+echo -e "  ${YELLOW}apps/miniapp/src/contracts/abis.ts${NC} - ABI del contrato"
+echo -e "  ${YELLOW}apps/miniapp/.env.local${NC} - Dirección del contrato"
 echo ""
 
 echo -e "${BLUE}🔗 Enlaces Útiles:${NC}"

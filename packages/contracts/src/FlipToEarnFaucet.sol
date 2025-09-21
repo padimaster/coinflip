@@ -15,49 +15,60 @@ contract FlipToEarnFaucet is
 {
     using SignatureVerifier for *;
 
-    // Configuration parameters
     uint256 public minFlipsRequired;
     uint256 public dailyClaimsLimit;
     uint256 public dropAmount;
-    uint256 public cooldownPeriod;
-    uint256 public signatureExpiration;
+    uint256 public signatureExpirationTime;
 
-    // Signing key for EIP-712 signatures
-    address public signingKey;
-
-    // Daily claims tracking
-    mapping(uint256 => uint256) public dailyClaimsCount; // date => count
+    address[] public authorizedRelayers;
+    mapping(uint256 => uint256) public dailyClaimsCount;
     uint256 public constant SECONDS_PER_DAY = 86400;
 
-    // User state tracking
     mapping(address => uint256) public userNonce;
     mapping(address => uint256) public userLastClaimTime;
     mapping(address => uint256) public userFlipCount;
+    mapping(address => bool) public isAuthorizedRelayer;
 
-    // EIP-712 domain separator
     bytes32 public immutable DOMAIN_SEPARATOR;
 
+    modifier onlyAuthorized() {
+        require(isAuthorizedRelayer[msg.sender], "Not authorized");
+        _;
+    }
+
     constructor(
-        address _signingKey,
+        address[] memory _authorizedRelayers,
         uint256 _minFlipsRequired,
         uint256 _dailyClaimsLimit,
         uint256 _dropAmount,
-        uint256 _cooldownPeriod,
-        uint256 _signatureExpiration
+        uint256 _signatureExpirationTime
     ) Ownable(msg.sender) {
-        require(_signingKey != address(0), "Invalid signing key");
-        require(_minFlipsRequired > 0, "Invalid min flips required");
-        require(_dailyClaimsLimit > 0, "Invalid daily limit");
-        require(_dropAmount > 0, "Invalid drop amount");
-        require(_cooldownPeriod > 0, "Invalid cooldown period");
-        require(_signatureExpiration > 0, "Invalid signature expiration");
+        require(_authorizedRelayers.length > 0, "No authorized relayers");
+        require(_minFlipsRequired > 2, "Invalid min flips required");
+        require(_dailyClaimsLimit > 3, "Invalid daily limit");
+        require(
+            _dropAmount > 0.000000000000000001 ether,
+            "Invalid drop amount"
+        );
 
-        signingKey = _signingKey;
+        require(
+            _signatureExpirationTime > 5 minutes,
+            "Invalid signature expiration"
+        );
+
+        for (uint256 i = 0; i < _authorizedRelayers.length; i++) {
+            require(
+                _authorizedRelayers[i] != address(0),
+                "Invalid relayer address"
+            );
+            authorizedRelayers.push(_authorizedRelayers[i]);
+            isAuthorizedRelayer[_authorizedRelayers[i]] = true;
+        }
+
         minFlipsRequired = _minFlipsRequired;
         dailyClaimsLimit = _dailyClaimsLimit;
         dropAmount = _dropAmount;
-        cooldownPeriod = _cooldownPeriod;
-        signatureExpiration = _signatureExpiration;
+        signatureExpirationTime = _signatureExpirationTime;
 
         DOMAIN_SEPARATOR = SignatureVerifier.getDomainSeparator(
             "CoinFlipFaucet",
@@ -66,24 +77,31 @@ contract FlipToEarnFaucet is
             address(this)
         );
 
-        emit FaucetConfigured(_minFlipsRequired, _dailyClaimsLimit);
+        emit FaucetConfigured(
+            _dropAmount,
+            _minFlipsRequired,
+            _dailyClaimsLimit
+        );
     }
 
     function claimReward(
         ClaimData calldata claimData,
         bytes calldata signature
-    ) external override nonReentrant whenNotPaused {
+    ) external override nonReentrant whenNotPaused onlyAuthorized {
+        require(
+            claimData.nonce == userNonce[claimData.userAddress],
+            "Invalid nonce"
+        );
         require(
             claimData.flipCount >= claimData.minFlipsRequired,
             "Insufficient flips"
         );
         require(
-            block.timestamp <= claimData.timestamp + signatureExpiration,
+            block.timestamp <= claimData.timestamp + signatureExpirationTime,
             "Signature expired"
         );
         require(block.timestamp >= claimData.timestamp, "Invalid timestamp");
 
-        // Verify signature
         require(
             SignatureVerifier.verifyClaimSignature(
                 claimData.userAddress,
@@ -92,19 +110,15 @@ contract FlipToEarnFaucet is
                 claimData.timestamp,
                 claimData.nonce,
                 signature,
-                claimData.userAddress, // The user should sign their own claim
+                claimData.userAddress,
                 DOMAIN_SEPARATOR
             ),
             "Invalid signature"
         );
 
-        // Check nonce
-        require(claimData.nonce == userNonce[claimData.userAddress], "Invalid nonce");
-
-        // Check cooldown
         require(
-            block.timestamp >= userLastClaimTime[claimData.userAddress] + cooldownPeriod,
-            "Cooldown period not met"
+            claimData.nonce == userNonce[claimData.userAddress],
+            "Invalid nonce"
         );
 
         // Check daily limit
@@ -125,11 +139,10 @@ contract FlipToEarnFaucet is
         userNonce[claimData.userAddress] += 1;
         dailyClaimsCount[today] += 1;
 
-        // Reset user flip count
-        userFlipCount[claimData.userAddress] = 0;
-
         // Transfer reward
-        (bool success, ) = payable(claimData.userAddress).call{value: dropAmount}("");
+        (bool success, ) = payable(claimData.userAddress).call{
+            value: dropAmount
+        }("");
         require(success, "Transfer failed");
 
         emit RewardClaimed(
@@ -145,28 +158,7 @@ contract FlipToEarnFaucet is
         }
     }
 
-    function initiateSession()
-        external
-        override
-        whenNotPaused
-        returns (uint256)
-    {
-        // Reset user flip count
-        userFlipCount[msg.sender] = 0;
-
-        emit SessionInitiated(
-            msg.sender,
-            minFlipsRequired,
-            userNonce[msg.sender]
-        );
-        return minFlipsRequired;
-    }
-
     // View functions
-    function getMinFlipsRequired() external view override returns (uint256) {
-        return minFlipsRequired;
-    }
-
     function getDailyClaimsLimit() external view override returns (uint256) {
         return dailyClaimsLimit;
     }
@@ -181,20 +173,6 @@ contract FlipToEarnFaucet is
         address user
     ) external view override returns (uint256) {
         return userNonce[user];
-    }
-
-    function getUserMinFlipsRequired(
-        address /* user */
-    ) external view override returns (uint256) {
-        return minFlipsRequired;
-    }
-
-    function isClaimAvailable(
-        address user
-    ) external view override returns (bool) {
-        return
-            userFlipCount[user] >= minFlipsRequired &&
-            block.timestamp >= userLastClaimTime[user] + cooldownPeriod;
     }
 
     function getContractBalance() external view override returns (uint256) {
@@ -223,20 +201,40 @@ contract FlipToEarnFaucet is
         dropAmount = amount;
     }
 
-    function setCooldownPeriod(uint256 period) external onlyOwner {
-        require(period > 0, "Invalid period");
-        cooldownPeriod = period;
-    }
-
-    function setSignatureExpiration(uint256 expiration) external onlyOwner {
+    function setSignatureExpirationTime(uint256 expiration) external onlyOwner {
         require(expiration > 0, "Invalid expiration");
-        signatureExpiration = expiration;
+        signatureExpirationTime = expiration;
     }
 
-    function updateSigningKey(address newKey) external onlyOwner {
-        require(newKey != address(0), "Invalid key");
-        signingKey = newKey;
-        emit SigningKeyUpdated(newKey);
+    function addAuthorizedRelayer(address newRelayer) external onlyOwner {
+        require(newRelayer != address(0), "Invalid relayer address");
+        require(!isAuthorizedRelayer[newRelayer], "Relayer already authorized");
+
+        authorizedRelayers.push(newRelayer);
+        isAuthorizedRelayer[newRelayer] = true;
+        emit AuthorizedRelayerAdded(newRelayer);
+    }
+
+    function removeAuthorizedRelayer(address relayer) external onlyOwner {
+        require(isAuthorizedRelayer[relayer], "Relayer not authorized");
+
+        isAuthorizedRelayer[relayer] = false;
+
+        for (uint256 i = 0; i < authorizedRelayers.length; i++) {
+            if (authorizedRelayers[i] == relayer) {
+                authorizedRelayers[i] = authorizedRelayers[
+                    authorizedRelayers.length - 1
+                ];
+                authorizedRelayers.pop();
+                break;
+            }
+        }
+
+        emit AuthorizedRelayerRemoved(relayer);
+    }
+
+    function getAuthorizedRelayers() external view returns (address[] memory) {
+        return authorizedRelayers;
     }
 
     function fund() external payable onlyOwner {
@@ -262,10 +260,5 @@ contract FlipToEarnFaucet is
         require(success, "Withdrawal failed");
 
         emit EmergencyWithdrawal(balance);
-    }
-
-    // Receive function to accept ETH
-    receive() external payable {
-        emit ContractFunded(msg.value);
     }
 }
