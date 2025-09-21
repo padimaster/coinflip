@@ -24,7 +24,7 @@ interface IFaucetContract {
         uint256 nonce
     );
 
-    event DailyLimitReached(uint256 date, uint256 limit);
+    event UserDailyLimitReached(address indexed user, uint256 date, uint256 limit);
     event FaucetConfigured(uint256 minFlipsRequired, uint256 dailyLimit);
     event MinFlipsRequiredUpdated(uint256 minFlipsRequired);
     event DailyClaimsLimitUpdated(uint256 limit);
@@ -46,6 +46,8 @@ interface IFaucetContract {
     function getDailyClaimsLimit() external view returns (uint256);
 
     function getDailyClaimsCount(uint256 date) external view returns (uint256);
+
+    function getUserDailyClaimsCount(address user, uint256 date) external view returns (uint256);
 
     function getUserNonce(address user) external view returns (uint256);
 
