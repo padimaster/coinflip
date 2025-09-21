@@ -13,7 +13,6 @@ interface ShareResultProps {
 
 export default function ShareResult({ 
   betResult, 
-  userAddress: _userAddress, 
   onShareSuccess, 
   onShareError 
 }: ShareResultProps) {

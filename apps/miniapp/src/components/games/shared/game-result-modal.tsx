@@ -1,6 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ShareResult from "../degen/share-result";
 
@@ -43,13 +48,13 @@ export interface GameResultModalProps {
   showShareButtons?: boolean;
 }
 
-export default function GameResultModal({ 
-  isOpen, 
-  onClose, 
-  onNewGame, 
-  result, 
+export default function GameResultModal({
+  isOpen,
+  onClose,
+  onNewGame,
+  result,
   userAddress,
-  showShareButtons = true 
+  showShareButtons = true,
 }: GameResultModalProps) {
   const [shareSuccess, setShareSuccess] = useState(false);
 
@@ -59,7 +64,7 @@ export default function GameResultModal({
   };
 
   const handleShareError = (error: string) => {
-    console.error('Share error:', error);
+    console.error("Share error:", error);
   };
 
   const renderResultContent = () => {
@@ -69,36 +74,35 @@ export default function GameResultModal({
       case "bet":
         return (
           <>
-            <div className={`pixel-font text-2xl font-bold mb-4 ${
-              result.won ? "text-green-300" : "text-red-300"
-            }`}>
+            <div
+              className={`pixel-font text-2xl font-bold mb-4 ${
+                result.won ? "text-green-300" : "text-red-300"
+              }`}
+            >
               {result.won ? "🎉 YOU WON! 🎉" : "😢 YOU LOST"}
             </div>
-            
+
             {result.won && (
-              <div className="text-4xl mb-4 animate-bounce">
-                🎊 🎈 🎁
-              </div>
+              <div className="text-4xl mb-4 animate-bounce">🎊 🎈 🎁</div>
             )}
-            
+
             <div className="space-y-3">
               <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-600">
                 <p className="text-gray-200 text-sm">
-                  <span className="text-white font-bold">You bet:</span> {result.amount} ETH on{' '}
-                  <span className={`font-bold ${
-                    result.side === 'heads' ? 'text-pink-300' : 'text-blue-300'
-                  }`}>
+                  <span className="text-white font-bold">You bet:</span>{" "}
+                  {result.amount} ETH on{" "}
+                  <span
+                    className={`font-bold ${
+                      result.side === "heads"
+                        ? "text-pink-300"
+                        : "text-blue-300"
+                    }`}
+                  >
                     {result.side.toUpperCase()}
                   </span>
                 </p>
               </div>
-              
-              <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-600">
-                <p className="text-gray-200 text-sm">
-                  <span className="text-white font-bold">Result:</span> {result.result.toUpperCase()}
-                </p>
-              </div>
-              
+
               {result.won && (
                 <div className="bg-green-900/30 rounded-lg p-3 border border-green-400">
                   <p className="text-green-200 font-bold text-lg">
@@ -116,17 +120,21 @@ export default function GameResultModal({
             <div className="pixel-font text-2xl font-bold mb-4 text-blue-300">
               🪙 FLIP RESULT 🪙
             </div>
-            
+
             <div className="text-4xl mb-4">
-              {result.result === 'heads' ? '🟡' : '⚫'}
+              {result.result === "heads" ? "🟡" : "⚫"}
             </div>
-            
+
             <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-600">
               <p className="text-gray-200 text-sm">
-                <span className="text-white font-bold">Result:</span>{' '}
-                <span className={`font-bold ${
-                  result.result === 'heads' ? 'text-pink-300' : 'text-blue-300'
-                }`}>
+                <span className="text-white font-bold">Result:</span>{" "}
+                <span
+                  className={`font-bold ${
+                    result.result === "heads"
+                      ? "text-pink-300"
+                      : "text-blue-300"
+                  }`}
+                >
                   {result.result.toUpperCase()}
                 </span>
               </p>
@@ -140,21 +148,20 @@ export default function GameResultModal({
             <div className="pixel-font text-2xl font-bold mb-4 text-green-300">
               🎉 REWARD CLAIMED! 🎉
             </div>
-            
-            <div className="text-4xl mb-4 animate-bounce">
-              🎊 🎈 🎁
-            </div>
-            
+
+            <div className="text-4xl mb-4 animate-bounce">🎊 🎈 🎁</div>
+
             <div className="space-y-3">
               <div className="bg-green-900/30 rounded-lg p-3 border border-green-400">
                 <p className="text-green-200 font-bold text-lg">
                   +{result.amount} ETH
                 </p>
               </div>
-              
+
               <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-600">
                 <p className="text-gray-200 text-sm">
-                  <span className="text-white font-bold">Flips completed:</span> {result.flipsCompleted}/{result.flipsRequired}
+                  <span className="text-white font-bold">Flips completed:</span>{" "}
+                  {result.flipsCompleted}/{result.flipsRequired}
                 </p>
               </div>
             </div>
@@ -187,7 +194,7 @@ export default function GameResultModal({
             {renderResultContent()}
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="text-center space-y-4">
           {/* Share Success Message */}
           {shareSuccess && (
@@ -197,14 +204,10 @@ export default function GameResultModal({
               </p>
             </div>
           )}
-          
+
           <div className="space-y-3 pt-4">
             <div className="flex gap-3">
-              <Button
-                variant="kawaii"
-                className="flex-1"
-                onClick={onClose}
-              >
+              <Button variant="kawaii" className="flex-1" onClick={onClose}>
                 CONTINUE
               </Button>
               {onNewGame && (
@@ -217,7 +220,7 @@ export default function GameResultModal({
                 </Button>
               )}
             </div>
-            
+
             {renderShareComponent()}
           </div>
         </div>

@@ -11,7 +11,7 @@ import {
 import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 export const useWallet = () => {
-  const isInMiniApp = useIsInMiniApp();
+  const { isInMiniApp } = useIsInMiniApp();
   const chainId = useChainId();
 
   const { address, isConnected } = useAccount();
@@ -42,6 +42,11 @@ export const useWallet = () => {
   };
 
   const switchNetwork = async (targetChainId: number) => {
+    // In miniapp, only allow Base Mainnet (8453)
+    if (isInMiniApp && targetChainId !== 8453) {
+      throw new Error("Only Base Mainnet is supported in miniapp");
+    }
+
     try {
       await switchChain({ chainId: targetChainId as 31337 | 8453 | 84532 });
     } catch (error) {
@@ -66,6 +71,11 @@ export const useWallet = () => {
     );
   };
 
+  // Check if current network is supported in miniapp
+  const isNetworkSupportedInMiniApp = () => {
+    return !isInMiniApp || chainId === 8453; // Only Base Mainnet is supported in miniapp
+  };
+
   return {
     isInMiniApp,
     isConnected,
@@ -76,5 +86,6 @@ export const useWallet = () => {
     chainId,
     currentNetwork: getCurrentNetwork(),
     balance: balance ? parseFloat(balance.formatted) : 0,
+    isNetworkSupportedInMiniApp: isNetworkSupportedInMiniApp(),
   };
 };

@@ -19,10 +19,11 @@ const NETWORKS = [
 ];
 
 export function NetworkSwitcher() {
-  const { chainId, switchNetwork, isConnected } = useWallet();
+  const { chainId, switchNetwork, isConnected, isInMiniApp } = useWallet();
   const [open, setOpen] = useState(false);
 
-  if (!isConnected) {
+  // Hide network switcher in miniapp
+  if (!isConnected || isInMiniApp) {
     return null;
   }
 

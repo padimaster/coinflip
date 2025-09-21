@@ -1,6 +1,5 @@
-import { useChainId, useWriteContract, useAccount } from "wagmi";
+import { useChainId, useAccount } from "wagmi";
 
-import { FLIP_TO_EARN_FAUCET_CONTRACT_ABI as abi } from "@/contracts/abis";
 import { useSignTypedData } from "wagmi";
 import { getFlipToEarnFaucetContractAddress } from "@/services/common/contracts.lib";
 import { useFlipStore } from "@/lib/store";
@@ -11,7 +10,6 @@ const useContract = () => {
 
   return {
     address,
-    abi,
     chainId,
     isConnected: !!chainId,
   };
@@ -20,7 +18,6 @@ const useContract = () => {
 export const useClaimReward = () => {
   const { address: contractAddress, chainId } = useContract();
   const { address: userAddress } = useAccount();
-  const { isPending, error, isSuccess } = useWriteContract();
   const { signTypedData } = useSignTypedData();
   const { flipsSinceLastClaim } = useFlipStore();
 
@@ -72,7 +69,8 @@ export const useClaimReward = () => {
               throw new Error(`Verification failed: ${verified.statusText}`);
             }
 
-            resolve(claimRewardTypedDataToSign);
+            const result = await verified.json();
+            resolve(result);
           } catch (error) {
             console.error("Error in verification process:", error);
             reject(error);
@@ -88,8 +86,5 @@ export const useClaimReward = () => {
 
   return {
     claimReward,
-    isPending,
-    error,
-    isSuccess,
   };
 };

@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import WalletButton from "../auth/wallet-button";
 import { NetworkSwitcher } from "./network-switcher";
+import { NetworkIndicator } from "./network-indicator";
 import BalanceVisualizer from "./balance-visualizer";
 import { useWallet } from "@/hooks/useWallet";
 
@@ -22,6 +23,7 @@ export default function Header() {
         />
         <div className="flex items-center space-x-4">
           <BalanceVisualizer balance={balance} />
+          <NetworkIndicator />
           <NetworkSwitcher />
           <WalletButton />
         </div>

@@ -9,7 +9,7 @@ export default function SideSelector({ selectedSide, onSideSelect, disabled = fa
       </p>
       <div className="grid grid-cols-2 gap-3">
         <button
-          className={`p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+          className={`flex gap-2 items-center justify-center p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
             selectedSide === "heads"
               ? "border-pink-400 bg-pink-500/30 shadow-lg shadow-pink-500/25"
               : "border-gray-500 bg-gray-700/50 hover:border-gray-400 hover:bg-gray-600/50"
@@ -23,7 +23,7 @@ export default function SideSelector({ selectedSide, onSideSelect, disabled = fa
           }`}>HEADS</p>
         </button>
         <button
-          className={`p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
+          className={`flex gap-2 items-center justify-center p-3 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${
             selectedSide === "tails"
               ? "border-blue-400 bg-blue-500/30 shadow-lg shadow-blue-500/25"
               : "border-gray-500 bg-gray-700/50 hover:border-gray-400 hover:bg-gray-600/50"
