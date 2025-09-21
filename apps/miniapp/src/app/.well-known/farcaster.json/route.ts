@@ -38,5 +38,8 @@ export async function GET() {
       ogImageUrl: process.env.NEXT_PUBLIC_APP_OG_IMAGE,
       castShareUrl: `${URL}/api/share`,
     }),
+    baseBuilder: {
+      allowedAddresses: [process.env.NEXT_PUBLIC_APP_ALLOWED_ADDRESSES],
+    },
   });
 }
