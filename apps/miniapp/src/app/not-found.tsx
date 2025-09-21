@@ -48,7 +48,11 @@ export default function NotFound() {
             🏠 Go Home
           </Link>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.history.back();
+              }
+            }}
             className="px-6 py-3 bg-transparent border-2 border-[#87CEEB] text-[#87CEEB] font-bold rounded-lg hover:bg-[#87CEEB] hover:text-black transition-all duration-300"
           >
             ← Go Back
