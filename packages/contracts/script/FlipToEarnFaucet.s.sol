@@ -22,7 +22,7 @@ contract FlipToEarnFaucetScript is Script {
         address signingKey = deployer; // Using deployer as signing key for now
         uint256 minFlipsRequired = 5; // Minimum 5 flips required
         uint256 dailyClaimsLimit = 10; // 10 claims per day
-        uint256 dropAmount = 0.000001 ether;
+        uint256 dropAmount = 0.0001 ether;
         uint256 cooldownPeriod = 24 hours; // 24 hour cooldown
         uint256 signatureExpiration = 1 hours; // 1 hour signature expiration
 
@@ -45,7 +45,7 @@ contract FlipToEarnFaucetScript is Script {
         console.log("Cooldown period:", cooldownPeriod);
         console.log("Signature expiration:", signatureExpiration);
 
-        uint256 fundingAmount = 0.0003 ether;
+        uint256 fundingAmount = 0.5 ether;
         faucet.fund{value: fundingAmount}();
 
         console.log("Contract funded with:", fundingAmount);
