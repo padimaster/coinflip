@@ -172,8 +172,8 @@ contract FlipToEarnFaucet is
     }
 
     function getDailyClaimsCount(
-        uint256 date
-    ) external view override returns (uint256) {
+        uint256 /* date */
+    ) external pure override returns (uint256) {
         // This function is kept for backward compatibility but now returns 0
         // since we no longer track global daily claims
         return 0;
