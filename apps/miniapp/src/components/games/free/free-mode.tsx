@@ -11,7 +11,7 @@ export default function CoinFlipGame() {
   const { state, handleFlipClick, isFlipping } = useFreeGame();
 
   return (
-    <div className="flex flex-col items-center justify-between h-full py-8">
+    <div className="flex flex-col items-center justify-between h-[calc(100vh-8rem)] py-8">
       <GameHeader headerText={state.headerText} />
       <ClaimRewardButton />
       <Coin state={state.state} result={state.result} />

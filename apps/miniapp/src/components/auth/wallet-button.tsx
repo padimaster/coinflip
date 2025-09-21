@@ -19,6 +19,7 @@ import {
 } from "../ui/dialog";
 import { useWallet } from "@/hooks/useWallet";
 import { NetworkSwitcher } from "../layout/network-switcher";
+import { Link, LogOut } from "lucide-react";
 
 export default function Wallet() {
   const { isConnected } = useAccount();
@@ -58,8 +59,8 @@ export default function Wallet() {
       {!isConnected && (
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="kawaii" className="font-press-start-2p text-sm">
-              CONNECT WALLET
+            <Button variant="kawaii" className="font-press-start-2p text-sm px-3">
+              <Link className="w-4 h-4" /> Connect
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md bg-[rgba(7,13,31,0.95)] backdrop-blur-[10px] border-gray-600">
@@ -95,9 +96,10 @@ export default function Wallet() {
           <Button
             onClick={handleDisconnect}
             variant="kawaii"
-            className="font-press-start-2p text-sm"
+            className="font-press-start-2p text-sm px-3"
+            title="Sign Out"
           >
-            SIGN OUT
+            <LogOut className="w-4 h-4" />
           </Button>
         </div>
       )}

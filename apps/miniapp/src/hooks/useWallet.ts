@@ -1,9 +1,12 @@
+"use client";
+
 import {
   useAccount,
   useConnect,
   useDisconnect,
   useChainId,
   useSwitchChain,
+  useBalance,
 } from "wagmi";
 import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
@@ -15,6 +18,7 @@ export const useWallet = () => {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
+  const { data: balance } = useBalance({ address });
 
   const connectWallet = async () => {
     try {
@@ -71,5 +75,6 @@ export const useWallet = () => {
     address,
     chainId,
     currentNetwork: getCurrentNetwork(),
+    balance: balance ? parseFloat(balance.formatted) : 0,
   };
 };

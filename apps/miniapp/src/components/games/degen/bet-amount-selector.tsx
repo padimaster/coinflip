@@ -1,5 +1,5 @@
 "use client";
-import { BetAmountSelectorProps } from "../types";
+import { BetAmountSelectorProps } from "./types";
 
 export default function BetAmountSelector({ 
   betAmount, 
@@ -35,16 +35,13 @@ export default function BetAmountSelector({
           );
         })}
       </div>
-      <div className="text-center bg-gray-800/30 rounded-lg p-3 border border-gray-600">
-        <p className="text-gray-300 text-sm">
-          <span className="text-white font-bold">Balance:</span> {walletBalance.toFixed(4)} ETH
-        </p>
-        {walletBalance < betAmount && (
-          <p className="text-yellow-300 text-sm mt-1 font-bold">
+      {walletBalance < betAmount && (
+        <div className="text-center bg-red-800/30 rounded-lg p-3 border border-red-600">
+          <p className="text-red-300 text-sm font-bold">
             ⚠️ Insufficient funds
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

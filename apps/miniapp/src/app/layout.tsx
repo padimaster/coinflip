@@ -5,6 +5,7 @@ import { Press_Start_2P } from "next/font/google";
 import { BaseProvider } from "@/providers/base.provider";
 import Header from "@/components/layout/header";
 import WagmiProvider from "@/providers/wagmi-provider";
+import { AppNavigationProvider } from "@/contexts/app-navigation.context";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,9 +31,11 @@ export default function RootLayout({
       >
         <WagmiProvider>
           <BaseProvider>
-            <Header />
-            {children}
-            <NavigationMenu />
+            <AppNavigationProvider>
+              <Header />
+              {children}
+              <NavigationMenu />
+            </AppNavigationProvider>
           </BaseProvider>
         </WagmiProvider>
       </body>

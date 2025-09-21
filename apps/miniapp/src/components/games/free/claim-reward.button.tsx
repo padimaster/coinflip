@@ -2,10 +2,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useFlipStore } from "@/lib/store";
-import { useClaimReward } from "@/services/contract.services";
+import { useClaimReward } from "@/services/frontend/contract.services";
 import { useAccount } from "wagmi";
 
-const MIN_FLIPS_BEFORE_CLAIM = 2;
+const MIN_FLIPS_BEFORE_CLAIM = 5;
 
 export default function ClaimRewardButton() {
   const [isClaimingReward, setIsClaimingReward] = useState(false);

@@ -1,0 +1,96 @@
+import { useChainId, useWriteContract, useAccount } from "wagmi";
+
+import { FLIP_TO_EARN_FAUCET_CONTRACT_ABI as abi } from "@/contracts/abis";
+import { useSignTypedData } from "wagmi";
+import { getFlipToEarnFaucetContractAddress } from "@/services/common/contracts.lib";
+import { getClaimRewardSignedTypedData } from "../sign/sign.lib";
+import { useFlipStore } from "@/lib/store";
+
+const useContract = () => {
+  const chainId = useChainId();
+  const address = getFlipToEarnFaucetContractAddress(chainId);
+
+  return {
+    address,
+    abi,
+    chainId,
+    isConnected: !!chainId,
+  };
+};
+
+export const useClaimReward = () => {
+  const { address: contractAddress, chainId } = useContract();
+  const { address: userAddress } = useAccount();
+  const { isPending, error, isSuccess } = useWriteContract();
+  const { signTypedData } = useSignTypedData();
+  const { flipsSinceLastClaim } = useFlipStore();
+
+  const claimReward = async () => {
+    if (!chainId) {
+      throw new Error("Chain ID is required. Please connect your wallet.");
+    }
+
+    if (!userAddress) {
+      throw new Error("User address is required. Please connect your wallet.");
+    }
+
+    if (!contractAddress) {
+      throw new Error("Contract address not found for the current chain.");
+    }
+
+    const dataToSign = await fetch("/api/claim/sign/message", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userAddress,
+        contractAddress,
+        chainId,
+        flipCount: flipsSinceLastClaim,
+      }),
+    });
+
+    const claimRewardTypedDataToSign = await dataToSign.json();
+
+    return new Promise((resolve, reject) => {
+      signTypedData(claimRewardTypedDataToSign, {
+        onSuccess: async (signature) => {
+          try {
+            const verified = await fetch("/api/claim/sign/verify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                address: userAddress,
+                signedTypedData: claimRewardTypedDataToSign,
+                signature,
+              }),
+            });
+
+            if (!verified.ok) {
+              throw new Error(`Verification failed: ${verified.statusText}`);
+            }
+
+            resolve(claimRewardTypedDataToSign);
+          } catch (error) {
+            console.error("Error in verification process:", error);
+            reject(error);
+          }
+        },
+        onError: (error) => {
+          console.error("Error signing typed data:", error);
+          reject(error);
+        },
+      });
+    });
+  };
+
+  return {
+    claimReward,
+    isPending,
+    error,
+    isSuccess,
+  };
+};

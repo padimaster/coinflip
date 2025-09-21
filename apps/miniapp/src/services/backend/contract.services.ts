@@ -1,7 +1,42 @@
-import { getWalletClient } from "@/config/backend.config";
-import {
-  FAUCET_CONTRACT_ABI as abi,
-} from "@/contracts/coin-flip.contract";
+import { getPublicClient, getWalletClient } from "@/config/backend.config";
+import { FLIP_TO_EARN_FAUCET_CONTRACT_ABI as abi } from "@/contracts/abis";
+import { getFlipToEarnFaucetContractAddress } from "../common/contracts.lib";
+
+export const getUserNonce = async (userAddress: string, chainId: number) => {
+  const client = getPublicClient(chainId);
+  const contractAddress = getFlipToEarnFaucetContractAddress(chainId);
+
+  console.log("getUserNonce - chainId:", chainId);
+  console.log("getUserNonce - contractAddress:", contractAddress);
+  console.log("getUserNonce - userAddress:", userAddress);
+
+  if (!contractAddress) {
+    throw new Error(`No contract address found for chainId: ${chainId}`);
+  }
+
+  const userNonce = await client.readContract({
+    address: contractAddress as `0x${string}`,
+    abi,
+    functionName: "getUserNonce",
+    args: [userAddress as `0x${string}`],
+  });
+
+  return userNonce.toString();
+};
+
+export const getMinFlipsRequired = async (chainId: number) => {
+  const client = getPublicClient(chainId);
+  const contractAddress = getFlipToEarnFaucetContractAddress(chainId);
+
+  const minFlipsRequired = await client.readContract({
+    address: contractAddress as `0x${string}`,
+    abi,
+    functionName: "minFlipsRequired",
+  });
+
+  // Convert BigInt to string for JSON serialization
+  return minFlipsRequired.toString();
+};
 
 export const claimReward = async (
   address: string,

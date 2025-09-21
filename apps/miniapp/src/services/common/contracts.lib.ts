@@ -1,4 +1,10 @@
-import { FAUCET_CONTRACT_ADDRESSES } from "@/contracts/coin-flip.contract";
+const FAUCET_CONTRACT_ADDRESSES = {
+  local: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_LOCAL,
+  baseSepolia:
+    process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA,
+  base: process.env
+    .NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET,
+} as const;
 
 export const getFlipToEarnFaucetContractAddress = (chainId?: number) => {
   console.log("chainId", chainId);

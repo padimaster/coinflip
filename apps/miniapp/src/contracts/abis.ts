@@ -1,22 +1,17 @@
-// Auto-generated contract configuration
-// Generated on: 2025-09-20T06:37:38.675Z
-// Chain ID: 31337
-// Contract Address: 0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0
+// ⚠️  AUTO-GENERATED FILE - DO NOT EDIT MANUALLY
+// Generated on: 2025-09-21T00:28:49.719Z
+// Network: Development/Compilation
+// This file is automatically updated by compile-and-update-abi script
+// Manual edits will be overwritten on next compilation
 
-export const FAUCET_CONTRACT_ADDRESSES = {
-  local: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_LOCAL,
-  baseSepolia: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA,
-  base: process.env.NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET,
-} as const;
-
-export const FAUCET_CONTRACT_ABI = [
+export const FLIP_TO_EARN_FAUCET_CONTRACT_ABI = [
   {
     "type": "constructor",
     "inputs": [
       {
-        "name": "_signingKey",
-        "type": "address",
-        "internalType": "address"
+        "name": "_authorizedRelayers",
+        "type": "address[]",
+        "internalType": "address[]"
       },
       {
         "name": "_minFlipsRequired",
@@ -34,21 +29,12 @@ export const FAUCET_CONTRACT_ABI = [
         "internalType": "uint256"
       },
       {
-        "name": "_cooldownPeriod",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_signatureExpiration",
+        "name": "_signatureExpirationTime",
         "type": "uint256",
         "internalType": "uint256"
       }
     ],
     "stateMutability": "nonpayable"
-  },
-  {
-    "type": "receive",
-    "stateMutability": "payable"
   },
   {
     "type": "function",
@@ -72,6 +58,38 @@ export const FAUCET_CONTRACT_ABI = [
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "addAuthorizedRelayer",
+    "inputs": [
+      {
+        "name": "newRelayer",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "authorizedRelayers",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "view"
@@ -120,19 +138,6 @@ export const FAUCET_CONTRACT_ABI = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "cooldownPeriod",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -195,6 +200,19 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
+    "name": "getAuthorizedRelayers",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address[]",
+        "internalType": "address[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getContractBalance",
     "inputs": [],
     "outputs": [
@@ -253,38 +271,6 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
-    "name": "getMinFlipsRequired",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getUserMinFlipsRequired",
-    "inputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "getUserNonce",
     "inputs": [
       {
@@ -304,23 +290,10 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
-    "name": "initiateSession",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "isClaimAvailable",
+    "name": "isAuthorizedRelayer",
     "inputs": [
       {
-        "name": "user",
+        "name": "",
         "type": "address",
         "internalType": "address"
       }
@@ -382,21 +355,21 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
-    "name": "renounceOwnership",
-    "inputs": [],
+    "name": "removeAuthorizedRelayer",
+    "inputs": [
+      {
+        "name": "relayer",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
   {
     "type": "function",
-    "name": "setCooldownPeriod",
-    "inputs": [
-      {
-        "name": "period",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
+    "name": "renounceOwnership",
+    "inputs": [],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
@@ -441,7 +414,7 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
-    "name": "setSignatureExpiration",
+    "name": "setSignatureExpirationTime",
     "inputs": [
       {
         "name": "expiration",
@@ -454,26 +427,13 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "function",
-    "name": "signatureExpiration",
+    "name": "signatureExpirationTime",
     "inputs": [],
     "outputs": [
       {
         "name": "",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "signingKey",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
       }
     ],
     "stateMutability": "view"
@@ -495,19 +455,6 @@ export const FAUCET_CONTRACT_ABI = [
     "type": "function",
     "name": "unpause",
     "inputs": [],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "updateSigningKey",
-    "inputs": [
-      {
-        "name": "newKey",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
@@ -567,6 +514,32 @@ export const FAUCET_CONTRACT_ABI = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "AuthorizedRelayerAdded",
+    "inputs": [
+      {
+        "name": "newRelayer",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "AuthorizedRelayerRemoved",
+    "inputs": [
+      {
+        "name": "relayer",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
   },
   {
     "type": "event",
@@ -642,6 +615,12 @@ export const FAUCET_CONTRACT_ABI = [
     "type": "event",
     "name": "FaucetConfigured",
     "inputs": [
+      {
+        "name": "dropAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
       {
         "name": "minFlipsRequired",
         "type": "uint256",
@@ -741,44 +720,6 @@ export const FAUCET_CONTRACT_ABI = [
   },
   {
     "type": "event",
-    "name": "SessionInitiated",
-    "inputs": [
-      {
-        "name": "user",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "minFlipsRequired",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      },
-      {
-        "name": "nonce",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "SigningKeyUpdated",
-    "inputs": [
-      {
-        "name": "newKey",
-        "type": "address",
-        "indexed": false,
-        "internalType": "address"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
     "name": "Unpaused",
     "inputs": [
       {
@@ -856,13 +797,4 @@ export const FAUCET_CONTRACT_ABI = [
   }
 ] as const;
 
-// Contract configuration
-export const FAUCET_CONFIG = {
-  addresses: FAUCET_CONTRACT_ADDRESSES,
-  abi: FAUCET_CONTRACT_ABI,
-  chainId: 31337,
-  network: 'local-anvil',
-} as const;
-
-// Contract function signatures for type safety
-export type FaucetContract = typeof FAUCET_CONTRACT_ABI;
+export type FlipToEarnFaucetContract = typeof FLIP_TO_EARN_FAUCET_CONTRACT_ABI;

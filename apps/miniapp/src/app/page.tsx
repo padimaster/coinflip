@@ -1,9 +1,5 @@
-import CoinFlipGame from "@/components/games/free/free-mode";
+import UnifiedApp from "@/components/pages/unified-app";
 
 export default function Home() {
-  return (
-    <main className="flex flex-col min-h-[calc(100vh-8rem)]">
-      <CoinFlipGame />
-    </main>
-  );
+  return <UnifiedApp />;
 }
