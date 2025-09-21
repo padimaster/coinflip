@@ -6,7 +6,7 @@ import { BaseProvider } from "@/providers/base.provider";
 import Header from "@/components/layout/header";
 import WagmiProvider from "@/providers/wagmi-provider";
 import { AppNavigationProvider } from "@/contexts/app-navigation.context";
-import { SDKProvider } from "@/components/providers/sdk-provider";
+import { FarcasterProvider } from "@/providers/farcaster-provider";
 import { ErudaProvider } from "@/providers/eruda.provider";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -100,7 +100,7 @@ export default function RootLayout({
         className={`antialiased ${pressStart2P.variable} bg-[#070d1f] text-white`}
       >
         <ErudaProvider>
-          <SDKProvider>
+          <FarcasterProvider>
             <WagmiProvider>
               <BaseProvider>
                 <AppNavigationProvider>
@@ -110,7 +110,7 @@ export default function RootLayout({
                 </AppNavigationProvider>
               </BaseProvider>
             </WagmiProvider>
-          </SDKProvider>
+          </FarcasterProvider>
         </ErudaProvider>
       </body>
     </html>
