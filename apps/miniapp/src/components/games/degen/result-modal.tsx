@@ -1,9 +1,51 @@
 "use client";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ResultModalProps } from "./types";
+import { shareService } from "@/services/frontend/share.service";
+import { useAccount } from "wagmi";
 
 export default function ResultModal({ isOpen, onClose, onNewBet, betResult }: ResultModalProps) {
+  const { address } = useAccount();
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
+
+  const handleShare = async () => {
+    if (!betResult || !address || isSharing) return;
+
+    setIsSharing(true);
+    setShareSuccess(false);
+
+    try {
+      const shareData = shareService.betResultToShareData(betResult, address);
+      
+      // Try Farcaster share first
+      const farcasterSuccess = await shareService.shareGameResult(shareData);
+      
+      if (farcasterSuccess) {
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 3000);
+      } else {
+        // Fallback to Web Share API
+        const webShareSuccess = await shareService.shareViaWebAPI(shareData);
+        
+        if (!webShareSuccess) {
+          // Final fallback to clipboard
+          const clipboardSuccess = await shareService.copyToClipboard(shareData);
+          if (clipboardSuccess) {
+            setShareSuccess(true);
+            setTimeout(() => setShareSuccess(false), 3000);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-gray-900 border-2 border-gray-600 max-w-md">
@@ -50,6 +92,15 @@ export default function ResultModal({ isOpen, onClose, onNewBet, betResult }: Re
               </div>
             )}
           </div>
+
+          {/* Share Success Message */}
+          {shareSuccess && (
+            <div className="bg-green-900/30 rounded-lg p-3 border border-green-400">
+              <p className="text-green-200 text-sm font-bold">
+                ✅ Shared successfully!
+              </p>
+            </div>
+          )}
           
           <div className="flex gap-3 pt-4">
             <Button
@@ -65,6 +116,14 @@ export default function ResultModal({ isOpen, onClose, onNewBet, betResult }: Re
               onClick={onNewBet}
             >
               NEW BET
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1 border-blue-500 text-blue-300 hover:bg-blue-700"
+              onClick={handleShare}
+              disabled={isSharing}
+            >
+              {isSharing ? "..." : "📤 SHARE"}
             </Button>
           </div>
         </div>
