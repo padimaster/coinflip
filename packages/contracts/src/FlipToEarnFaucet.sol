@@ -21,7 +21,8 @@ contract FlipToEarnFaucet is
     uint256 public signatureExpirationTime;
 
     address[] public authorizedRelayers;
-    mapping(uint256 => uint256) public dailyClaimsCount;
+    // Daily claims tracking per wallet
+    mapping(address => mapping(uint256 => uint256)) public userDailyClaimsCount; // user => date => count
     uint256 public constant SECONDS_PER_DAY = 86400;
 
     mapping(address => uint256) public userNonce;
@@ -121,11 +122,12 @@ contract FlipToEarnFaucet is
             "Invalid nonce"
         );
 
-        // Check daily limit
+        // Check per-wallet daily limit
         uint256 today = block.timestamp / SECONDS_PER_DAY;
         require(
-            dailyClaimsCount[today] < dailyClaimsLimit,
-            "Daily limit reached"
+            userDailyClaimsCount[claimData.userAddress][today] <
+                dailyClaimsLimit,
+            "Daily limit reached for this wallet"
         );
 
         // Check contract balance
@@ -137,7 +139,7 @@ contract FlipToEarnFaucet is
         // Update state
         userLastClaimTime[claimData.userAddress] = block.timestamp;
         userNonce[claimData.userAddress] += 1;
-        dailyClaimsCount[today] += 1;
+        userDailyClaimsCount[claimData.userAddress][today] += 1;
 
         // Transfer reward
         (bool success, ) = payable(claimData.userAddress).call{
@@ -153,8 +155,15 @@ contract FlipToEarnFaucet is
             claimData.nonce
         );
 
-        if (dailyClaimsCount[today] >= dailyClaimsLimit) {
-            emit DailyLimitReached(today, dailyClaimsLimit);
+        if (
+            userDailyClaimsCount[claimData.userAddress][today] >=
+            dailyClaimsLimit
+        ) {
+            emit UserDailyLimitReached(
+                claimData.userAddress,
+                today,
+                dailyClaimsLimit
+            );
         }
     }
 
@@ -164,9 +173,18 @@ contract FlipToEarnFaucet is
     }
 
     function getDailyClaimsCount(
+        uint256 /* date */
+    ) external pure override returns (uint256) {
+        // This function is kept for backward compatibility but now returns 0
+        // since we no longer track global daily claims
+        return 0;
+    }
+
+    function getUserDailyClaimsCount(
+        address user,
         uint256 date
     ) external view override returns (uint256) {
-        return dailyClaimsCount[date];
+        return userDailyClaimsCount[user][date];
     }
 
     function getUserNonce(
