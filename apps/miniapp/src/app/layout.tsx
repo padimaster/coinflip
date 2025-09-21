@@ -6,6 +6,7 @@ import { BaseProvider } from "@/providers/base.provider";
 import Header from "@/components/layout/header";
 import WagmiProvider from "@/providers/wagmi-provider";
 import { AppNavigationProvider } from "@/contexts/app-navigation.context";
+import { sdk } from "@farcaster/miniapp-sdk";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "http://localhost:3000"),
@@ -63,11 +64,12 @@ const pressStart2P = Press_Start_2P({
   display: "swap", // Optimize font loading
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await sdk.actions.ready();
   return (
     <html lang="en">
       <body
