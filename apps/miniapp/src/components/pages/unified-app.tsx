@@ -76,7 +76,7 @@ export default function UnifiedApp() {
   };
 
   return (
-    <main className="flex flex-col w-full h-[calc(100vh-8rem)]">
+    <main className="flex flex-col w-full min-h-[calc(100vh-8rem)]">
       {renderCurrentView()}
     </main>
   );

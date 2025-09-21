@@ -7,6 +7,7 @@ import Header from "@/components/layout/header";
 import WagmiProvider from "@/providers/wagmi-provider";
 import { AppNavigationProvider } from "@/contexts/app-navigation.context";
 import { SDKProvider } from "@/components/providers/sdk-provider";
+import { ErudaProvider } from "@/providers/eruda.provider";
 
 export async function generateMetadata(): Promise<Metadata> {
   const appUrl = new URL(
@@ -98,17 +99,19 @@ export default function RootLayout({
       <body
         className={`antialiased ${pressStart2P.variable} bg-[#070d1f] text-white`}
       >
-        <SDKProvider>
-          <WagmiProvider>
-            <BaseProvider>
-              <AppNavigationProvider>
-                <Header />
-                {children}
-                <NavigationMenu />
-              </AppNavigationProvider>
-            </BaseProvider>
-          </WagmiProvider>
-        </SDKProvider>
+        <ErudaProvider>
+          <SDKProvider>
+            <WagmiProvider>
+              <BaseProvider>
+                <AppNavigationProvider>
+                  <Header />
+                  {children}
+                  <NavigationMenu />
+                </AppNavigationProvider>
+              </BaseProvider>
+            </WagmiProvider>
+          </SDKProvider>
+        </ErudaProvider>
       </body>
     </html>
   );

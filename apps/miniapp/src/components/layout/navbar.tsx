@@ -14,7 +14,7 @@ export const NavigationMenu: React.FC = () => {
   const { currentView, navigateTo } = useAppNavigation();
 
   return (
-    <nav className="sticky bottom-0 left-0 right-0 bg-[rgba(7,13,31,0.95)] backdrop-blur-[10px] py-4 h-16">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[rgba(7,13,31,0.95)] backdrop-blur-[10px] py-4 h-16">
       <div className="flex justify-around items-center max-w-md mx-auto">
         {navItems.map((tab) => (
           <button
