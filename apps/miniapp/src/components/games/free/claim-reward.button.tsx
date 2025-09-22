@@ -19,6 +19,7 @@ export default function ClaimRewardButton() {
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [claimedAmount, setClaimedAmount] = useState<string | undefined>();
   const [flipsCompleted, setFlipsCompleted] = useState<number>(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const flipsSinceLastClaim = useFlipStore((s) => s.flipsSinceLastClaim);
   const lastClaimAt = useFlipStore((s) => s.lastClaimAt);
   const claimRewardStore = useFlipStore((s) => s.claimReward);
@@ -61,6 +62,7 @@ export default function ClaimRewardButton() {
   const handleClaimReward = async () => {
     if (!canClaim) return;
     setIsClaimingReward(true);
+    setErrorMessage(null); // Clear any previous error
     console.log("Claiming reward via contract");
 
     // Capture the flip count before it gets reset
@@ -84,10 +86,15 @@ export default function ClaimRewardButton() {
         setShowRewardModal(true);
       } else {
         console.log("Claim failed or verification failed");
+        setErrorMessage("Claim failed. Please try again.");
       }
     } catch (err) {
       console.error("=== CLAIM FAILED ===");
       console.error("Error:", err);
+      
+      // Display user-friendly error message
+      const errorMsg = err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(errorMsg);
     } finally {
       setIsClaimingReward(false);
     }
@@ -102,15 +109,41 @@ export default function ClaimRewardButton() {
 
   return (
     <>
-      <Button
-        variant="kawaii"
-        onClick={handleClaimReward}
-        disabled={!canClaim}
-        aria-busy={isClaimingReward}
-        title={!canClaim ? label : undefined}
-      >
-        {label}
-      </Button>
+      <div className="space-y-3 w-full max-w-sm mx-auto flex flex-col items-center justify-center">
+        <Button
+          variant="kawaii"
+          onClick={handleClaimReward}
+          disabled={!canClaim}
+          aria-busy={isClaimingReward}
+          title={!canClaim ? label : undefined}
+          className=""
+        >
+          {label}
+        </Button>
+        
+        {errorMessage && (
+          <div className="bg-red-900/20 border-2 border-red-400/60 rounded-xl p-4 shadow-lg backdrop-blur-sm animate-in slide-in-from-top-2 duration-300">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 bg-red-500/20 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="text-red-400 text-sm">⚠</span>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-red-100 text-sm leading-relaxed">
+                  {errorMessage}
+                </p>
+                <button
+                  onClick={() => setErrorMessage(null)}
+                  className="text-red-300 hover:text-red-100 text-xs font-medium underline mt-2 transition-colors duration-200 hover:no-underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       
       <RewardClaimModal
         isOpen={showRewardModal}

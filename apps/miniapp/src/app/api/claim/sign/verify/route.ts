@@ -2,6 +2,7 @@ import { claimReward } from "@/services/backend/contract.services";
 import { ClaimRewardSignTypedData } from "@/services/sign/sign.types";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyTypedData } from "viem";
+import { parseContractError, ContractError } from "@/lib/error-utils";
 
 interface VerifySignedTypedData {
   address: `0x${string}`;
@@ -64,10 +65,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ verified, signedTypedData, result });
   } catch (error) {
     console.error("Signed typed data verification error:", error);
+    
+    // Check if this is a contract error with parsed information
+    if (error instanceof Error && (error as any).contractError) {
+      const contractError: ContractError = (error as any).contractError;
+      
+      return NextResponse.json(
+        {
+          error: contractError.userMessage,
+          code: contractError.code,
+          details: contractError.message,
+          type: "contract_error",
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Handle other types of errors
+    const parsedError = parseContractError(error);
+    
     return NextResponse.json(
       {
-        error: "Signed typed data verification failed",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: parsedError.userMessage,
+        code: parsedError.code,
+        details: parsedError.message,
+        type: "verification_error",
       },
       { status: 400 }
     );

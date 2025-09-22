@@ -6,7 +6,6 @@ import { useDegenGame } from "@/hooks/useDegenGame";
 import SideSelector from "./side-selector";
 import BetAmountSelector from "./bet-amount-selector";
 import BetSummary from "./bet-summary";
-import BetStatus from "./bet-status";
 import PlaceBetButton from "./place-bet-button";
 import ResultModal from "./result-modal";
 import WarningBanner from "./warning-banner";
@@ -27,12 +26,11 @@ export default function DegenModeGame() {
     placeBet,
     resetGame,
     closeResultModal,
-    isFlipping,
   } = useDegenGame();
 
   if (!isConnected) {
     return (
-      <div className="flex flex-col items-center justify-center h-full py-8">
+      <div className="flex flex-col items-center justify-center h-full py-8 pb-16">
         <GameHeader headerText="CONNECT WALLET" />
         <div className="text-center">
           <p className="text-muted-foreground mb-4">
@@ -82,10 +80,7 @@ export default function DegenModeGame() {
             isPlacingBet={isPlacingBet}
             coinState={state.state}
           />
-          <BetStatus
-            isPlacingBet={isPlacingBet}
-            coinState={state.state}
-          />
+         
         </div>
 
         {/* Warning */}
@@ -100,20 +95,6 @@ export default function DegenModeGame() {
         betResult={lastBetResult}
       />
 
-      {/* Flipping Modal */}
-      {isFlipping && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border-2 border-gray-600 rounded-xl p-8 max-w-md mx-4 text-center">
-            <div className="text-6xl mb-6 animate-spin">🪙</div>
-            <h2 className="pixel-font text-2xl font-bold text-white mb-4">
-              🎲 FLIPPING COIN...
-            </h2>
-            <p className="text-gray-300 text-sm">
-              The coin is spinning in the air...
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

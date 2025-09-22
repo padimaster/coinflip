@@ -66,6 +66,11 @@ export const useClaimReward = () => {
             });
 
             if (!verified.ok) {
+              const errorData = await verified.json();
+              // If the API returns structured error data, use it
+              if (errorData.error) {
+                throw new Error(errorData.error);
+              }
               throw new Error(`Verification failed: ${verified.statusText}`);
             }
 
