@@ -58,6 +58,8 @@ export const claimReward = async (
     console.log("timestamp", timestamp);
     console.log("nonce", nonce);
     console.log("signature", signature);
+    console.log("signature length:", signature.length);
+    console.log("signature type:", typeof signature);
 
     // Get the appropriate client based on chain ID
     const client = getWalletClient(chainId);
@@ -65,6 +67,11 @@ export const claimReward = async (
     if (!contractAddress) {
       throw new Error("Contract address is required");
     }
+
+    // Ensure signature is properly formatted as hex string
+    const formattedSignature = signature.startsWith('0x') ? signature : `0x${signature}`;
+    console.log("Formatted signature for contract:", formattedSignature);
+    console.log("Formatted signature length:", formattedSignature.length);
 
     const result = await client.writeContract({
       address: contractAddress as `0x${string}`,
@@ -78,7 +85,7 @@ export const claimReward = async (
           timestamp: timestamp as bigint,
           nonce: nonce as bigint,
         },
-        signature as `0x${string}`,
+        formattedSignature as `0x${string}`,
       ],
     });
 
