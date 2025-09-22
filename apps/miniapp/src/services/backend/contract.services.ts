@@ -1,7 +1,7 @@
 import { getPublicClient, getWalletClient } from "@/config/backend.config";
 import { FLIP_TO_EARN_FAUCET_CONTRACT_ABI as abi } from "@/contracts/abis";
 import { getFlipToEarnFaucetContractAddress } from "../common/contracts.lib";
-import { parseContractError, ContractError } from "@/lib/error-utils";
+import { parseContractError } from "@/lib/error-utils";
 
 export const getUserNonce = async (userAddress: string, chainId: number) => {
   const client = getPublicClient(chainId);
@@ -90,9 +90,12 @@ export const claimReward = async (
     const parsedError = parseContractError(error);
     
     // Create a custom error with the parsed information
-    const customError = new Error(parsedError.userMessage);
-    (customError as any).contractError = parsedError;
-    (customError as any).originalError = error;
+    const customError = new Error(parsedError.userMessage) as Error & { 
+      contractError: typeof parsedError; 
+      originalError: unknown; 
+    };
+    customError.contractError = parsedError;
+    customError.originalError = error;
     
     throw customError;
   }

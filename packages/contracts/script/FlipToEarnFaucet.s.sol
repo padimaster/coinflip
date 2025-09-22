@@ -23,7 +23,6 @@ contract FlipToEarnFaucetScript is Script {
         uint256 minFlipsRequired = 5; // Minimum 5 flips required
         uint256 dailyClaimsLimit = 10; // 10 claims per day
         uint256 dropAmount = 0.0001 ether;
-        uint256 cooldownPeriod = 24 hours; // 24 hour cooldown
         uint256 signatureExpiration = 1 hours; // 1 hour signature expiration
 
         address[] memory authorizedRelayers = new address[](1);
@@ -42,7 +41,6 @@ contract FlipToEarnFaucetScript is Script {
         console.log("Min flips required:", minFlipsRequired);
         console.log("Daily claims limit:", dailyClaimsLimit);
         console.log("Drop amount:", dropAmount);
-        console.log("Cooldown period:", cooldownPeriod);
         console.log("Signature expiration:", signatureExpiration);
 
         uint256 fundingAmount = 0.5 ether;

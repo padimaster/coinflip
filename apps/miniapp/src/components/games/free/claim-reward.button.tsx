@@ -11,7 +11,7 @@ const MIN_FLIPS_BEFORE_CLAIM = 5;
 interface BackendClaimResult {
   verified: boolean;
   result?: string; // Transaction hash
-  signedTypedData?: any;
+  signedTypedData?: unknown;
 }
 
 export default function ClaimRewardButton() {

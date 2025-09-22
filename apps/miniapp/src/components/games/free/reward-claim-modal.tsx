@@ -24,7 +24,7 @@ export default function RewardClaimModal({
   claimedAmount,
   flipsCompleted,
 }: RewardClaimModalProps) {
-  const { dropAmount, isLoading } = useDropAmount();
+  const { dropAmount } = useDropAmount();
   const flipsSinceLastClaim = useFlipStore((s) => s.flipsSinceLastClaim);
 
   // Use the captured flip count if available, otherwise fallback to current store value

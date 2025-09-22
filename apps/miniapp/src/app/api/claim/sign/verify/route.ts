@@ -67,8 +67,8 @@ export async function POST(req: NextRequest) {
     console.error("Signed typed data verification error:", error);
     
     // Check if this is a contract error with parsed information
-    if (error instanceof Error && (error as any).contractError) {
-      const contractError: ContractError = (error as any).contractError;
+    if (error instanceof Error && 'contractError' in error) {
+      const contractError: ContractError = (error as Error & { contractError: ContractError }).contractError;
       
       return NextResponse.json(
         {
