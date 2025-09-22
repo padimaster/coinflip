@@ -36,6 +36,32 @@ export function decodeAbiEncodedSignature(signature: string): `0x${string}` {
     } catch (error) {
       console.warn(`Failed to decode as ABI-encoded signature: ${error}`);
     }
+    
+    // Fallback: Manual parsing for this specific ABI structure
+    try {
+      const data = normalized.substring(2); // Remove 0x
+      
+      // Parse the structure: [length_prefix][data_length][data_offset][signature_length][signature_data]
+      const lengthPrefix = data.substring(0, 64);
+      const actualData = data.substring(64);
+      
+      const dataLength = parseInt(actualData.substring(0, 64), 16);
+      const dataOffset = parseInt(actualData.substring(64, 128), 16);
+      const signatureLength = parseInt(actualData.substring(128, 192), 16);
+      
+      // Extract the signature data (starts at offset 256 in the full data)
+      const signatureData = data.substring(256, 256 + (signatureLength * 2));
+      const extractedSignature = `0x${signatureData}`;
+      
+      console.log(`Manual ABI decode: length=${signatureLength}, extracted=${extractedSignature}`);
+      
+      // Validate the extracted signature length
+      if (extractedSignature.length === 132) {
+        return extractedSignature as `0x${string}`;
+      }
+    } catch (error) {
+      console.warn(`Manual ABI decoding also failed: ${error}`);
+    }
   }
   
   // If not ABI-encoded or decoding failed, return as-is

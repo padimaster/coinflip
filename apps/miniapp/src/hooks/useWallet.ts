@@ -20,6 +20,8 @@ export const useWallet = () => {
   const { switchChain } = useSwitchChain();
   const { data: balance } = useBalance({ address });
 
+  console.log("isInMiniApp", isInMiniApp);
+
   const connectWallet = async () => {
     try {
       const coinbaseConnector = connectors.find(
