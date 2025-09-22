@@ -18,6 +18,8 @@ export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
   "Signature expired": "Your claim request has expired. Please try again.",
   "Invalid timestamp": "Invalid request timestamp. Please try again.",
   "Invalid signature": "Invalid signature. Please try again.",
+  "ECDSAInvalidSignatureLength": "Signature format error. Please try again.",
+  "ECDSAInvalidSignature": "Invalid signature format. Please try again.",
   "Insufficient contract balance": "The faucet is temporarily out of funds. Please try again later.",
   "Transfer failed": "Transaction failed. Please try again.",
   "Not authorized": "Unauthorized request. Please try again.",
@@ -58,6 +60,10 @@ export function parseContractError(error: unknown): ContractError {
       errorMessage = "Network error";
       userMessage = "Network connection issue. Please check your internet and try again.";
       errorCode = "NETWORK_ERROR";
+    } else if (message.includes("invalid signature length")) {
+      errorMessage = "Invalid signature length";
+      userMessage = "Signature format error. This may be due to wallet compatibility issues. Please try again.";
+      errorCode = "INVALID_SIGNATURE_LENGTH";
     } else if (message.includes("Contract function") && message.includes("reverted")) {
       // Extract the revert reason from viem error messages
       const revertMatch = message.match(/reverted with the following reason:\s*(.+)/);
