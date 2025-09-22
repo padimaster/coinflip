@@ -53,6 +53,10 @@ export const useClaimReward = () => {
       signTypedData(claimRewardTypedDataToSign, {
         onSuccess: async (signature) => {
           try {
+            console.log("claimRewardTypedDataToSign", claimRewardTypedDataToSign);
+            console.log("signature", signature);
+            console.log("userAddress", userAddress);
+
             const verified = await fetch("/api/claim/sign/verify", {
               method: "POST",
               headers: {
