@@ -11,11 +11,70 @@ interface VerifySignedTypedData {
 }
 
 /**
+ * Decodes ABI-encoded signature format to extract the actual ECDSA signature
+ * Handles Base miniapp signature format that comes as ABI-encoded bytes
+ */
+function decodeAbiEncodedSignature(signature: string): `0x${string}` {
+  // Remove any whitespace and ensure it starts with 0x
+  let normalized = signature.trim();
+  if (!normalized.startsWith('0x')) {
+    normalized = `0x${normalized}`;
+  }
+  
+  // Validate hex format
+  if (!isHex(normalized)) {
+    throw new Error(`Invalid hex signature: ${signature}`);
+  }
+  
+  // Remove 0x prefix for processing
+  const data = normalized.substring(2);
+  
+  // Check if this looks like ABI-encoded data (starts with length prefix)
+  if (data.length > 128) { // At least 64 chars for length prefix + some data
+    try {
+      // Parse ABI-encoded structure: [length_prefix][data_length][data_offset][signature_length][signature_data]
+      const lengthPrefix = data.substring(0, 64);
+      const actualData = data.substring(64);
+      
+      const dataLength = parseInt(actualData.substring(0, 64), 16);
+      const dataOffset = parseInt(actualData.substring(64, 128), 16);
+      const signatureLength = parseInt(actualData.substring(128, 192), 16);
+      
+      // Extract the actual signature (should be 65 bytes = 130 hex chars)
+      const signatureData = actualData.substring(192, 192 + (signatureLength * 2));
+      const extractedSignature = `0x${signatureData}`;
+      
+      console.log(`Decoded ABI-encoded signature: length=${signatureLength}, extracted=${extractedSignature}`);
+      
+      // Validate the extracted signature length
+      if (extractedSignature.length === 132) { // 0x + 130 hex chars = 65 bytes
+        return extractedSignature as `0x${string}`;
+      }
+    } catch (error) {
+      console.warn(`Failed to decode as ABI-encoded signature: ${error}`);
+    }
+  }
+  
+  // If not ABI-encoded or decoding failed, return as-is
+  return normalized as `0x${string}`;
+}
+
+/**
  * Normalizes signature format to ensure compatibility across different environments
  * Handles Base miniapp signature format differences
  */
 function normalizeSignature(signature: string): `0x${string}` {
-  // Remove any whitespace
+  // First try to decode as ABI-encoded signature
+  try {
+    const decoded = decodeAbiEncodedSignature(signature);
+    if (decoded.length === 132) { // Valid 65-byte signature
+      return decoded;
+    }
+  } catch (error) {
+    console.warn(`ABI decoding failed, falling back to normalization: ${error}`);
+  }
+  
+  // Fallback to original normalization logic
   let normalized = signature.trim();
   
   // Ensure it starts with 0x
@@ -63,21 +122,28 @@ async function verifySignatureWithFallback(
   signature: string
 ): Promise<{ verified: boolean; workingSignature: `0x${string}` }> {
   const strategies = [
-    // Strategy 1: Use original signature as-is
+    // Strategy 1: Try ABI decoding first (for Base miniapp format)
+    {
+      name: "abi_decoded",
+      getSignature: () => decodeAbiEncodedSignature(signature),
+      verify: (sig: `0x${string}`) => verifyTypedData({ address, domain, types, primaryType, message, signature: sig })
+    },
+    
+    // Strategy 2: Use original signature as-is
     {
       name: "original",
       getSignature: () => signature as `0x${string}`,
       verify: (sig: `0x${string}`) => verifyTypedData({ address, domain, types, primaryType, message, signature: sig })
     },
     
-    // Strategy 2: Normalize signature
+    // Strategy 3: Normalize signature
     {
       name: "normalized",
       getSignature: () => normalizeSignature(signature),
       verify: (sig: `0x${string}`) => verifyTypedData({ address, domain, types, primaryType, message, signature: sig })
     },
     
-    // Strategy 3: Try with recovery ID 0x00
+    // Strategy 4: Try with recovery ID 0x00
     {
       name: "recovery_00",
       getSignature: () => {
@@ -88,7 +154,7 @@ async function verifySignatureWithFallback(
       verify: (sig: `0x${string}`) => verifyTypedData({ address, domain, types, primaryType, message, signature: sig })
     },
     
-    // Strategy 4: Try with recovery ID 0x01
+    // Strategy 5: Try with recovery ID 0x01
     {
       name: "recovery_01",
       getSignature: () => {
