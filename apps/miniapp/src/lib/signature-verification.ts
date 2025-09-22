@@ -39,8 +39,18 @@ export async function parseAndVerifySignature(
     console.log("Parsed signature:", parsedSignature);
     console.log("Parsed signature length:", parsedSignature.length);
     
-    // Verify the parsed signature
-    const verified = await verifyTypedData({ 
+    // Debug: Log all the verification parameters
+    console.log("=== Signature Verification Debug ===");
+    console.log("Address:", address);
+    console.log("Domain:", JSON.stringify(domain, null, 2));
+    console.log("Types:", JSON.stringify(types, null, 2));
+    console.log("Primary Type:", primaryType);
+    console.log("Message:", JSON.stringify(message, null, 2));
+    console.log("Signature:", parsedSignature);
+    console.log("=====================================");
+    
+    // Try verification with the parsed signature first
+    let verified = await verifyTypedData({ 
       address, 
       domain, 
       types, 
@@ -50,6 +60,80 @@ export async function parseAndVerifySignature(
     });
     
     console.log("Signature verification result:", verified);
+    
+    // If verification failed, try with different recovery IDs
+    if (!verified && parsedSignature.length === 132) {
+      console.log("Trying with different recovery IDs...");
+      
+      const baseSignature = parsedSignature.slice(0, -2); // Remove last byte
+      
+      // Try with recovery ID 0x00
+      const sigWithRecovery00 = `${baseSignature}00` as `0x${string}`;
+      console.log("Trying recovery ID 0x00:", sigWithRecovery00);
+      verified = await verifyTypedData({ 
+        address, 
+        domain, 
+        types, 
+        primaryType, 
+        message, 
+        signature: sigWithRecovery00 
+      });
+      
+      if (verified) {
+        console.log("Verification succeeded with recovery ID 0x00");
+        return { 
+          verified: true, 
+          workingSignature: sigWithRecovery00 
+        };
+      }
+      
+      // Try with recovery ID 0x01
+      const sigWithRecovery01 = `${baseSignature}01` as `0x${string}`;
+      console.log("Trying recovery ID 0x01:", sigWithRecovery01);
+      verified = await verifyTypedData({ 
+        address, 
+        domain, 
+        types, 
+        primaryType, 
+        message, 
+        signature: sigWithRecovery01 
+      });
+      
+      if (verified) {
+        console.log("Verification succeeded with recovery ID 0x01");
+        return { 
+          verified: true, 
+          workingSignature: sigWithRecovery01 
+        };
+      }
+      
+      console.log("All recovery ID attempts failed");
+    }
+    
+    // If still not verified, try with the original signature as-is (in case it's not ABI-encoded)
+    if (!verified) {
+      console.log("Trying with original signature as-is...");
+      try {
+        verified = await verifyTypedData({ 
+          address, 
+          domain, 
+          types, 
+          primaryType, 
+          message, 
+          signature: signature as `0x${string}` 
+        });
+        
+        if (verified) {
+          console.log("Verification succeeded with original signature");
+          return { 
+            verified: true, 
+            workingSignature: signature as `0x${string}` 
+          };
+        }
+      } catch (error) {
+        console.log("Original signature verification failed:", error);
+      }
+    }
     
     return { 
       verified, 

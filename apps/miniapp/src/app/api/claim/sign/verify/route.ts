@@ -46,7 +46,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "Signed typed data verification failed",
-          details: "Invalid signature - all verification strategies failed",
+          details: "Signature verification failed - signature does not match the provided typed data",
+          debug: {
+            originalSignatureLength: signature.length,
+            parsedSignatureLength: workingSignature.length,
+            signatureFormat: signature.length > 200 ? "ABI-encoded" : "Standard ECDSA"
+          }
         },
         { status: 400 }
       );

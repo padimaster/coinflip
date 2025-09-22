@@ -1,4 +1,4 @@
-import { isHex } from "viem";
+import { isHex, decodeAbiParameters } from "viem";
 
 /**
  * Decodes ABI-encoded signature format to extract the actual ECDSA signature
@@ -20,29 +20,18 @@ export function decodeAbiEncodedSignature(signature: string): `0x${string}` {
     throw new Error(`Invalid hex signature: ${signature}`);
   }
   
-  // Remove 0x prefix for processing
-  const data = normalized.substring(2);
-  
-  // Check if this looks like ABI-encoded data (starts with length prefix)
-  if (data.length > 128) { // At least 64 chars for length prefix + some data
+  // Check if this looks like ABI-encoded data (longer than standard signature)
+  if (normalized.length > 200) {
     try {
-      // Parse ABI-encoded structure: [length_prefix][data_length][data_offset][signature_length][signature_data]
-      const lengthPrefix = data.substring(0, 64);
-      const actualData = data.substring(64);
+      // Try to decode as ABI-encoded bytes
+      const decoded = decodeAbiParameters([{ type: 'bytes' }], normalized);
+      const extractedSignature = decoded[0] as `0x${string}`;
       
-      const dataLength = parseInt(actualData.substring(0, 64), 16);
-      const dataOffset = parseInt(actualData.substring(64, 128), 16);
-      const signatureLength = parseInt(actualData.substring(128, 192), 16);
+      console.log(`Decoded ABI-encoded signature: extracted=${extractedSignature}`);
       
-      // Extract the actual signature (should be 65 bytes = 130 hex chars)
-      const signatureData = actualData.substring(192, 192 + (signatureLength * 2));
-      const extractedSignature = `0x${signatureData}`;
-      
-      console.log(`Decoded ABI-encoded signature: length=${signatureLength}, extracted=${extractedSignature}`);
-      
-      // Validate the extracted signature length
-      if (extractedSignature.length === 132) { // 0x + 130 hex chars = 65 bytes
-        return extractedSignature as `0x${string}`;
+      // Validate the extracted signature length (should be 65 bytes = 132 hex chars)
+      if (extractedSignature.length === 132) {
+        return extractedSignature;
       }
     } catch (error) {
       console.warn(`Failed to decode as ABI-encoded signature: ${error}`);
