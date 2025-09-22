@@ -56,10 +56,10 @@ function normalizeSignature(signature: string): `0x${string}` {
  */
 async function verifySignatureWithFallback(
   address: `0x${string}`,
-  domain: any,
-  types: any,
+  domain: Record<string, unknown>,
+  types: Record<string, unknown>,
   primaryType: string,
-  message: any,
+  message: Record<string, unknown>,
   signature: string
 ): Promise<{ verified: boolean; workingSignature: `0x${string}` }> {
   const strategies = [
