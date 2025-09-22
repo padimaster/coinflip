@@ -27,12 +27,12 @@ export const CONTRACT_ERROR_MESSAGES: Record<string, string> = {
 /**
  * Parses contract error messages and returns user-friendly versions
  */
-export function parseContractError(error: any): ContractError {
+export function parseContractError(error: unknown): ContractError {
   let errorMessage = "An unexpected error occurred. Please try again.";
   let userMessage = "Something went wrong. Please try again later.";
   let errorCode = "UNKNOWN_ERROR";
 
-  if (error?.message) {
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
     const message = error.message;
     
     // Check for specific contract revert messages
