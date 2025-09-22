@@ -15,10 +15,11 @@ export function BaseProvider({ children }: { children: ReactNode }) {
           theme: "default",
           name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
           logo: process.env.NEXT_PUBLIC_ICON_URL,
-        }
+        },
       }}
       miniKit={{
         enabled: true,
+        autoConnect: true,
       }}
     >
       {children}

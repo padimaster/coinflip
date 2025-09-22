@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { NavigationMenu } from "@/components/layout/navbar";
 import { Press_Start_2P } from "next/font/google";
-import { BaseProvider } from "@/providers/base.provider";
 import Header from "@/components/layout/header";
-import WagmiProvider from "@/providers/wagmi-provider";
-import { AppNavigationProvider } from "@/contexts/app-navigation.context";
-import { FarcasterProvider } from "@/providers/farcaster-provider";
-import { ErudaProvider } from "@/providers/eruda.provider";
+import { Providers } from "./providers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const appUrl = new URL(
@@ -99,19 +95,11 @@ export default function RootLayout({
       <body
         className={`antialiased ${pressStart2P.variable} bg-[#070d1f] text-white`}
       >
-        <ErudaProvider>
-          <FarcasterProvider>
-            <WagmiProvider>
-              <BaseProvider>
-                <AppNavigationProvider>
-                  <Header />
-                  {children}
-                  <NavigationMenu />
-                </AppNavigationProvider>
-              </BaseProvider>
-            </WagmiProvider>
-          </FarcasterProvider>
-        </ErudaProvider>
+        <Providers>
+          <Header />
+          {children}
+          <NavigationMenu />
+        </Providers>
       </body>
     </html>
   );

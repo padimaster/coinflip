@@ -1,24 +1,47 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 
-export const ErudaProvider = (props: { children: ReactNode }) => {
+export default function ErudaProvider() {
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Dynamically import eruda only in the browser
-      import("eruda")
-        .then((eruda) => {
-          try {
-            eruda.default.init();
-          } catch (error) {
-            console.log("Eruda failed to initialize", error);
-          }
-        })
-        .catch((error) => {
-          console.log("Eruda failed to load", error);
+    import("eruda").then((eruda) => {
+      if (!window.eruda) {
+        window.eruda = eruda.default;
+        const erudaInstance = eruda.default as {
+          init: (config?: {
+            defaults?: {
+              displaySize?: number;
+              transparency?: number;
+            };
+            tool?: string[];
+          }) => void;
+          position: (config: { x: number; y: number }) => void;
+        };
+        erudaInstance.init({
+          defaults: {
+            displaySize: 50,
+            transparency: 0.8,
+          },
         });
-    }
+
+        // Position the trigger button in bottom right corner
+        setTimeout(() => {
+          erudaInstance.position({
+            x: window.innerWidth - 60,
+            y: window.innerHeight - 60,
+          });
+        }, 100);
+
+        console.log("Eruda initialized for debugging");
+      }
+    });
   }, []);
 
-  return <>{props.children}</>;
-};
+  return null;
+}
+
+declare global {
+  interface Window {
+    eruda?: unknown;
+  }
+}
