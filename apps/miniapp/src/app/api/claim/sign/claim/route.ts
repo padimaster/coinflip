@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     
     // Handle contract-specific errors
     if (error && typeof error === 'object' && 'contractError' in error) {
-      const contractError = (error as any).contractError;
+      const contractError = (error as { contractError: { userMessage: string } }).contractError;
       console.debug('Contract error details:', contractError);
       return NextResponse.json(
         { error: "Contract execution failed", details: contractError.userMessage },
