@@ -6,8 +6,8 @@ Este directorio contiene scripts para automatizar el despliegue de contratos int
 
 ### `post-deploy.js`
 Script de Node.js que actualiza automáticamente:
-- **ABI del contrato** en `frontend/src/contracts/coin-flip.contract.ts`
-- **Dirección del contrato** en `frontend/.env.local`
+- **ABI del contrato** en `apps/miniapp/src/contracts/abis.ts`
+- **Dirección del contrato** en `apps/miniapp/.env.local`
 
 ### `deploy-to-sepolia.sh`
 Script completo de Bash que:
@@ -108,23 +108,24 @@ El script busca automáticamente:
 - ✅ Encuentra el archivo de broadcast más reciente
 - ✅ Extrae la dirección del contrato desplegado
 - ✅ Extrae el ABI del archivo compilado
-- ✅ Actualiza `frontend/src/contracts/coin-flip.contract.ts`
-- ✅ Crea/actualiza `frontend/.env.local`
+- ✅ Actualiza `apps/miniapp/src/contracts/abis.ts`
+- ✅ Crea/actualiza `apps/miniapp/.env.local`
 
 ## 📝 Archivos Actualizados
 
-### `frontend/src/contracts/coin-flip.contract.ts`
+### `apps/miniapp/src/contracts/abis.ts`
 ```typescript
-export const coinFlipContractAddress = process.env.NEXT_PUBLIC_COIN_FLIP_CONTRACT_ADDRESS;
-
-export const abi = [
+export const FLIP_TO_EARN_FAUCET_CONTRACT_ABI = [
   // ABI extraído automáticamente
 ] as const;
+
+export type FlipToEarnFaucetContract = typeof FLIP_TO_EARN_FAUCET_CONTRACT_ABI;
 ```
 
-### `frontend/.env.local`
+### `apps/miniapp/.env.local`
 ```env
-NEXT_PUBLIC_COIN_FLIP_CONTRACT_ADDRESS=0x...
+NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_SEPOLIA=0x...
+NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET=0x...
 ```
 
 ## 🔧 Personalización
@@ -149,9 +150,9 @@ NETWORK="tu_network_name"
 
 ### Cambiar Nombre del Contrato
 Si cambias el nombre del contrato, actualiza las referencias en:
-- `post-deploy.js`: `tx.contractName === 'TuContrato'`
-- `deploy-to-sepolia.sh`: `script/TuContrato.s.sol:TuContratoScript`
-- `deploy-to-mainnet.sh`: `script/TuContrato.s.sol:TuContratoScript`
+- `post-deploy.js`: `tx.contractName === 'FlipToEarnFaucet'`
+- `deploy-to-sepolia.sh`: `script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript`
+- `deploy-to-mainnet.sh`: `script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript`
 
 ## 🐛 Solución de Problemas
 

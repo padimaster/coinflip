@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para desplegar el contrato CoinFlip en Base Sepolia y actualizar automáticamente
+# Script para desplegar el contrato FlipToEarnFaucet en Base Sepolia y actualizar automáticamente
 # los archivos del frontend con el ABI y la dirección del contrato
 
 set -e  # Salir si cualquier comando falla
@@ -133,7 +133,7 @@ echo -e "${GREEN}🎉 ¡Despliegue completado exitosamente!${NC}"
 echo -e "${BLUE}📝 Resumen del despliegue:${NC}"
 echo -e "   • Network: Base Sepolia ($CHAIN_ID)"
 echo -e "   • Contrato: FlipToEarnFaucet"
-echo -e "   • ABI actualizado en: apps/miniapp/src/contracts/coin-flip.contract.ts"
+echo -e "   • ABI actualizado en: apps/miniapp/src/contracts/abis.ts"
 echo -e "   • Dirección del contrato en: apps/miniapp/.env.local"
 echo -e ""
 echo -e "${YELLOW}💡 Próximos pasos:${NC}"

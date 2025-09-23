@@ -43,7 +43,7 @@ contract FlipToEarnFaucetScript is Script {
         console.log("Drop amount:", dropAmount);
         console.log("Signature expiration:", signatureExpiration);
 
-        uint256 fundingAmount = 0.0045 ether;
+        uint256 fundingAmount = 0.002 ether;
         faucet.fund{value: fundingAmount}();
 
         console.log("Contract funded with:", fundingAmount);

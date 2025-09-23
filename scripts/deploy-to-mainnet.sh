@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script para desplegar el contrato CoinFlip en Base Mainnet y actualizar automáticamente
+# Script para desplegar el contrato FlipToEarnFaucet en Base Mainnet y actualizar automáticamente
 # los archivos del frontend con el ABI y la dirección del contrato
 
 set -e  # Salir si cualquier comando falla
@@ -112,7 +112,7 @@ echo -e "${PURPLE}📡 Network: $NETWORK (Chain ID: $CHAIN_ID)${NC}"
 
 # Intentar desplegar con verificación
 echo -e "${YELLOW}🔍 Intentando desplegar con verificación...${NC}"
-forge script script/CoinFlip.s.sol:CoinFlipScript \
+forge script script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript \
     --rpc-url "$NETWORK" \
     --broadcast \
     --verify \
@@ -125,7 +125,7 @@ if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
     echo -e "${YELLOW}⚠️  Despliegue con verificación falló, intentando sin verificación...${NC}"
     
     # Intentar desplegar sin verificación
-    forge script script/CoinFlip.s.sol:CoinFlipScript \
+    forge script script/FlipToEarnFaucet.s.sol:FlipToEarnFaucetScript \
         --rpc-url "$NETWORK" \
         --broadcast \
         -vvvv
@@ -167,12 +167,12 @@ fi
 echo -e "${GREEN}🎉 ¡Despliegue a Base Mainnet completado exitosamente!${NC}"
 echo -e "${PURPLE}📝 Resumen del despliegue:${NC}"
 echo -e "   • Network: Base Mainnet ($CHAIN_ID)"
-echo -e "   • Contrato: CoinFlip"
-echo -e "   • ABI actualizado en: apps/miniapp/src/contracts/coin-flip.contract.ts"
+echo -e "   • Contrato: FlipToEarnFaucet"
+echo -e "   • ABI actualizado en: apps/miniapp/src/contracts/abis.ts"
 echo -e "   • Dirección del contrato en: apps/miniapp/.env.local"
 echo -e ""
 echo -e "${YELLOW}💡 Próximos pasos:${NC}"
-echo -e "   1. Verifica que la variable NEXT_PUBLIC_COIN_FLIP_CONTRACT_ADDRESS esté en tu .env.local"
+echo -e "   1. Verifica que la variable NEXT_PUBLIC_FLIP_TO_EARN_FAUCET_CONTRACT_ADDRESS_BASE_MAINNET esté en tu .env.local"
 echo -e "   2. Reinicia tu servidor de desarrollo si está corriendo"
 echo -e "   3. ¡Tu frontend ya puede interactuar con el contrato desplegado en Mainnet!"
 echo -e ""
