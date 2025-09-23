@@ -1,110 +1,154 @@
-import { claimReward } from "@/services/backend/contract.services";
 import { ClaimRewardSignTypedData } from "@/services/sign/sign.types";
 import { NextRequest, NextResponse } from "next/server";
-import { parseContractError, ContractError } from "@/lib/error-utils";
-import { parseAndVerifySignature } from "@/lib/signature-verification";
+import { getPublicClient } from "@/config/backend.config";
 
-interface VerifySignedTypedData {
+export interface SignedTypedData {
   address: `0x${string}`;
   signedTypedData: ClaimRewardSignTypedData;
   signature: `0x${string}`;
 }
 
-
 export async function POST(req: NextRequest) {
   try {
+    const requestBody = await req.json();
     const { address, signedTypedData, signature } =
-      (await req.json()) as VerifySignedTypedData;
+      requestBody as SignedTypedData;
 
+    console.log("🔍 Starting verification process");
+    console.log("👤 Address:", address);
+    console.log(
+      "📝 Signature length:",
+      typeof signature === "string" ? signature.length : "N/A"
+    );
+
+    // Extract components
     const { message, domain, types, primaryType } =
       signedTypedData as ClaimRewardSignTypedData;
 
+    // Basic validation
     if (!address || !message || !signature || !domain || !types) {
+      const missing = [];
+      if (!address) missing.push("address");
+      if (!message) missing.push("message");
+      if (!signature) missing.push("signature");
+      if (!domain) missing.push("domain");
+      if (!types) missing.push("types");
+
+      console.error("❌ Missing required fields:", missing);
       return NextResponse.json(
         {
           error: "Missing required fields",
-          data: { signedTypedData, address, signature },
+          details: `Missing: ${missing.join(", ")}`,
+          data: {
+            hasAddress: !!address,
+            hasMessage: !!message,
+            hasSignature: !!signature,
+            hasDomain: !!domain,
+            hasTypes: !!types,
+          },
         },
         { status: 400 }
       );
     }
 
-    console.log("Original signature:", signature);
-    console.log("Signature length:", signature.length);
-    
-    // Parse and verify signature with proper format detection
-    const { verified, workingSignature } = await parseAndVerifySignature(
+    // Enhanced logging
+    console.log("🏢 Domain:", JSON.stringify(domain, null, 2));
+    console.log("📋 Primary Type:", primaryType);
+    console.log("🔧 Types available:", Object.keys(types || {}));
+    console.log("💬 Message:", JSON.stringify(message, null, 2));
+
+    // Get blockchain client
+    const client = getPublicClient(domain.chainId);
+
+    // Check if address is a smart contract
+    const bytecode = await client.getCode({ address });
+    const isContract = !!(bytecode && bytecode !== "0x");
+
+    console.log(`🏠 Address type: ${isContract ? "Smart Contract" : "EOA"}`);
+    if (isContract) {
+      console.log(`📦 Bytecode length: ${bytecode?.length || 0}`);
+    }
+
+    // Additional validation for types structure
+    if (!types.EIP712Domain) {
+      console.error("❌ Missing EIP712Domain in types");
+      return NextResponse.json(
+        {
+          error: "Invalid types structure",
+          details: "Missing EIP712Domain type definition",
+          availableTypes: Object.keys(types),
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate message structure
+    const expectedMessageFields = [
+      "userAddress",
+      "flipsCount",
+      "minFlipsRequired",
+      "timestamp",
+      "nonce",
+    ];
+    const messageFields = Object.keys(message || {});
+    const missingFields = expectedMessageFields.filter(
+      (field) => !(field in (message || {}))
+    );
+
+    if (missingFields.length > 0) {
+      console.error(
+        "❌ Invalid message structure, missing fields:",
+        missingFields
+      );
+      return NextResponse.json(
+        {
+          error: "Invalid message structure",
+          details: `Missing fields: ${missingFields.join(", ")}`,
+          expected: expectedMessageFields,
+          received: messageFields,
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log("🔐 Attempting signature verification...");
+
+    // Simple verification
+    const valid = await client.verifyTypedData({
       address,
       domain,
-      types,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      types: types as any,
       primaryType,
       message,
-      signature
-    );
+      signature,
+    });
 
-    if (!verified) {
+    if (!valid) {
       return NextResponse.json(
-        {
-          error: "Signed typed data verification failed",
-          details: "Signature verification failed - signature does not match the provided typed data",
-          debug: {
-            originalSignatureLength: signature.length,
-            parsedSignatureLength: workingSignature.length,
-            signatureFormat: signature.length > 200 ? "ABI-encoded" : "Standard ECDSA"
-          }
-        },
-        { status: 400 }
+        { error: "Invalid signature" },
+        { status: 401 }
       );
     }
 
-    console.log("Verified!!!! From API");
-    console.log("Working signature:", workingSignature);
-    console.log("Working signature length:", workingSignature.length);
-    console.log("Original signature length:", signature.length);
-
-    const result = await claimReward(
+    console.log("✅ Signature verification successful!");
+    return NextResponse.json({
+      verified: true,
       address,
-      BigInt(message.flipCount),
-      BigInt(message.minFlipsRequired),
-      BigInt(message.timestamp),
-      BigInt(message.nonce),
-      workingSignature,
-      domain.verifyingContract,
-      domain.chainId
-    );
-
-    console.log("Result!!!! From API", result);
-
-    return NextResponse.json({ verified, signedTypedData, result });
+      message,
+      verificationMethod: isContract ? "ERC-1271/ERC-6492" : "ECDSA",
+      result: "Signature verified successfully",
+    });
   } catch (error) {
-    console.error("Signed typed data verification error:", error);
-    
-    // Check if this is a contract error with parsed information
-    if (error instanceof Error && 'contractError' in error) {
-      const contractError: ContractError = (error as Error & { contractError: ContractError }).contractError;
-      
-      return NextResponse.json(
-        {
-          error: contractError.userMessage,
-          code: contractError.code,
-          details: contractError.message,
-          type: "contract_error",
-        },
-        { status: 400 }
-      );
-    }
-    
-    // Handle other types of errors
-    const parsedError = parseContractError(error);
-    
+    console.error("💥 Verification endpoint error:", error);
+
     return NextResponse.json(
       {
-        error: parsedError.userMessage,
-        code: parsedError.code,
-        details: parsedError.message,
-        type: "verification_error",
+        error: "Internal verification error",
+        details: error instanceof Error ? error.message : String(error),
+        verified: false,
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

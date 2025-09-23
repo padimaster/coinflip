@@ -3,6 +3,10 @@ import { useChainId, useAccount } from "wagmi";
 import { useSignTypedData } from "wagmi";
 import { getFlipToEarnFaucetContractAddress } from "@/services/common/contracts.lib";
 import { useFlipStore } from "@/lib/store";
+import {
+  requestBaseAccounts,
+  useBaseProvider,
+} from "@/providers/base.provider";
 
 const useContract = () => {
   const chainId = useChainId();
@@ -20,6 +24,7 @@ export const useClaimReward = () => {
   const { address: userAddress } = useAccount();
   const { signTypedData } = useSignTypedData();
   const { flipsSinceLastClaim } = useFlipStore();
+  const provider = useBaseProvider();
 
   const claimReward = async () => {
     if (!chainId) {
@@ -34,13 +39,16 @@ export const useClaimReward = () => {
       throw new Error("Contract address not found for the current chain.");
     }
 
+    const baseAddresses = await requestBaseAccounts(provider);
+    const baseAddress = baseAddresses[0];
+
     const dataToSign = await fetch("/api/claim/sign/message", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userAddress,
+        userAddress: provider ? baseAddress : (userAddress as `0x${string}`),
         contractAddress,
         chainId,
         flipCount: flipsSinceLastClaim,
@@ -49,14 +57,50 @@ export const useClaimReward = () => {
 
     const claimRewardTypedDataToSign = await dataToSign.json();
 
+    console.log("claimRewardTypedDataToSign", claimRewardTypedDataToSign);
+
+    if (provider) {
+      const signature = await provider.request({
+        method: "eth_signTypedData_v4",
+        params: [baseAddress, JSON.stringify(claimRewardTypedDataToSign)],
+      });
+
+      console.log("signatureFromBase", signature);
+
+      const verified = await fetch("/api/claim/sign/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          address: baseAddress,
+          signedTypedData: claimRewardTypedDataToSign,
+          signature,
+        }),
+      });
+
+      if (!verified.ok) {
+        const errorData = await verified.json();
+        // If the API returns structured error data, use it
+        if (errorData.error) {
+          throw new Error(errorData.error);
+        }
+        throw new Error(`Verification with base provider failed: ${verified}`);
+      }
+
+      const result = await verified.json();
+
+      console.log("verifiedFromBase", result);
+
+      return result;
+    }
+
+    console.log("Base Provider Not Found", provider);
+
     return new Promise((resolve, reject) => {
       signTypedData(claimRewardTypedDataToSign, {
         onSuccess: async (signature) => {
           try {
-            console.log("claimRewardTypedDataToSign", claimRewardTypedDataToSign);
-            console.log("signature", signature);
-            console.log("userAddress", userAddress);
-
             const verified = await fetch("/api/claim/sign/verify", {
               method: "POST",
               headers: {
@@ -75,7 +119,7 @@ export const useClaimReward = () => {
               if (errorData.error) {
                 throw new Error(errorData.error);
               }
-              throw new Error(`Verification failed: ${verified.statusText}`);
+              throw new Error(`Verification failed: ${verified}`);
             }
 
             const result = await verified.json();

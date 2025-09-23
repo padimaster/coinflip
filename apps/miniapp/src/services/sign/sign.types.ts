@@ -7,10 +7,10 @@ export interface ClaimRewardSignTypedData {
 
 export interface ClaimRewardSignMessage extends Record<string, unknown> {
   userAddress: `0x${string}`;
-  flipCount: number;
+  flipsCount: number;
   minFlipsRequired: number;
   timestamp: number;
-  nonce: string; // Changed to string for JSON serialization
+  nonce: number; // Should be number to match uint256 type
 }
 
 // SIGNATURE DOMAIN
@@ -23,6 +23,10 @@ export interface FlipToEarnSignDomain extends Record<string, unknown> {
 
 // SIGNATURE TYPES
 export interface ClaimRewardSignTypes extends Record<string, unknown> {
+  EIP712Domain: Array<{
+    name: string;
+    type: string;
+  }>;
   ClaimData: Array<{
     name: string;
     type: string;

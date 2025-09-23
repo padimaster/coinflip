@@ -7,10 +7,6 @@ export const getUserNonce = async (userAddress: string, chainId: number) => {
   const client = getPublicClient(chainId);
   const contractAddress = getFlipToEarnFaucetContractAddress(chainId);
 
-  console.log("getUserNonce - chainId:", chainId);
-  console.log("getUserNonce - contractAddress:", contractAddress);
-  console.log("getUserNonce - userAddress:", userAddress);
-
   if (!contractAddress) {
     throw new Error(`No contract address found for chainId: ${chainId}`);
   }
@@ -22,7 +18,7 @@ export const getUserNonce = async (userAddress: string, chainId: number) => {
     args: [userAddress as `0x${string}`],
   });
 
-  return userNonce.toString();
+  return Number(userNonce);
 };
 
 export const getMinFlipsRequired = async (chainId: number) => {
