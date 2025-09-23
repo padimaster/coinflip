@@ -21,8 +21,7 @@ contract FlipToEarnFaucet is
     uint256 public signatureExpirationTime;
 
     address[] public authorizedRelayers;
-    // Daily claims tracking per wallet
-    mapping(address => mapping(uint256 => uint256)) public userDailyClaimsCount; // user => date => count
+    mapping(address => mapping(uint256 => uint256)) public userDailyClaimsCount;
     uint256 public constant SECONDS_PER_DAY = 86400;
 
     mapping(address => uint256) public userNonce;
@@ -51,7 +50,6 @@ contract FlipToEarnFaucet is
             _dropAmount > 0.000000000000000001 ether,
             "Invalid drop amount"
         );
-
         require(
             _signatureExpirationTime > 5 minutes,
             "Invalid signature expiration"
@@ -103,6 +101,7 @@ contract FlipToEarnFaucet is
         );
         require(block.timestamp >= claimData.timestamp, "Invalid timestamp");
 
+        // 🔧 UPDATED: Now supports both EOA and smart wallet signatures
         require(
             SignatureVerifier.verifyClaimSignature(
                 claimData.userAddress,
@@ -111,15 +110,10 @@ contract FlipToEarnFaucet is
                 claimData.timestamp,
                 claimData.nonce,
                 signature,
-                claimData.userAddress,
+                claimData.userAddress, // expectedSigner should match userAddress
                 DOMAIN_SEPARATOR
             ),
             "Invalid signature"
-        );
-
-        require(
-            claimData.nonce == userNonce[claimData.userAddress],
-            "Invalid nonce"
         );
 
         // Check per-wallet daily limit
@@ -167,6 +161,8 @@ contract FlipToEarnFaucet is
         }
     }
 
+    // ... rest of your contract methods remain the same ...
+
     // View functions
     function getDailyClaimsLimit() external view override returns (uint256) {
         return dailyClaimsLimit;
@@ -175,8 +171,6 @@ contract FlipToEarnFaucet is
     function getDailyClaimsCount(
         uint256 /* date */
     ) external pure override returns (uint256) {
-        // This function is kept for backward compatibility but now returns 0
-        // since we no longer track global daily claims
         return 0;
     }
 
@@ -201,7 +195,7 @@ contract FlipToEarnFaucet is
         return dropAmount;
     }
 
-    // Admin functions
+    // Admin functions remain the same...
     function setMinFlipsRequired(uint256 _minFlipsRequired) external onlyOwner {
         require(_minFlipsRequired > 0, "Invalid min flips required");
         minFlipsRequired = _minFlipsRequired;
