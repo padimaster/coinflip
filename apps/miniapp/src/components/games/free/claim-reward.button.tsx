@@ -8,6 +8,7 @@ import RewardClaimModal from "./reward-claim-modal";
 import {
   getClaimRewardTypedData,
   verifyClaimRewardTypedData,
+  claimReward,
 } from "@/services/frontend/claim.service";
 import {
   requestBaseAccounts,
@@ -162,7 +163,7 @@ export default function ClaimRewardButton() {
           userAddress: address as `0x${string}`,
           chainId: chainId as number,
           contractAddress: contractAddress as `0x${string}`,
-          flipsCount: flipsSinceLastClaim,
+          flipCount: flipsSinceLastClaim,
         } satisfies GetTypedDataToSignBody);
 
         // Sign the typed data using Base provider
@@ -183,7 +184,7 @@ export default function ClaimRewardButton() {
           userAddress: address as `0x${string}`,
           chainId: chainId as number,
           contractAddress: contractAddress as `0x${string}`,
-          flipsCount: flipsSinceLastClaim,
+          flipCount: flipsSinceLastClaim,
         } satisfies GetTypedDataToSignBody);
 
         // Sign the typed data using wagmi
@@ -209,6 +210,16 @@ export default function ClaimRewardButton() {
 
       if (!result.verified) {
         throw new Error(result.error || "Signature verification failed");
+      }
+
+      const claimResult = await claimReward(
+        address as `0x${string}`,
+        typedDataToSign as ClaimRewardSignTypedData,
+        signature as `0x${string}`
+      );
+
+      if (!claimResult) {
+        throw new Error("Failed to claim reward");
       }
 
       // Success!

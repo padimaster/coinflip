@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     // Validate message structure
     const expectedMessageFields = [
       "userAddress",
-      "flipsCount",
+      "flipCount",
       "minFlipsRequired",
       "timestamp",
       "nonce",

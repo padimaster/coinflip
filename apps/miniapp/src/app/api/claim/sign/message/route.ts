@@ -13,24 +13,24 @@ export interface GetTypedDataToSignBody {
   userAddress: `0x${string}`;
   contractAddress: `0x${string}`;
   chainId: number;
-  flipsCount: number;
+  flipCount: number;
 }
 
 const MIN_FLIPS_REQUIRED = 5;
 
 export async function POST(req: NextRequest) {
   try {
-    const { userAddress, contractAddress, chainId, flipsCount } =
+    const { userAddress, contractAddress, chainId, flipCount } =
       (await req.json()) as GetTypedDataToSignBody;
 
     console.log("📝 Generating typed data with params:", {
       userAddress,
       contractAddress,
       chainId,
-      flipsCount,
+      flipCount,
     });
 
-    if (!userAddress || !contractAddress || !chainId || !flipsCount) {
+    if (!userAddress || !contractAddress || !chainId || !flipCount) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     const message: ClaimRewardSignMessage = {
       userAddress,
-      flipsCount,
+      flipCount,
       minFlipsRequired: MIN_FLIPS_REQUIRED,
       timestamp: Math.floor(Date.now() / 1000),
       nonce,
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
     // Validate all required fields in message
     const requiredFields = [
       "userAddress",
-      "flipsCount",
+      "flipCount",
       "minFlipsRequired",
       "timestamp",
       "nonce",

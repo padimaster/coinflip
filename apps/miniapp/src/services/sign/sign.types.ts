@@ -7,7 +7,7 @@ export interface ClaimRewardSignTypedData {
 
 export interface ClaimRewardSignMessage extends Record<string, unknown> {
   userAddress: `0x${string}`;
-  flipsCount: number;
+  flipCount: number;
   minFlipsRequired: number;
   timestamp: number;
   nonce: number; // Should be number to match uint256 type

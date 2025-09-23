@@ -4,21 +4,21 @@ export const getClaimRewardTypedData = async ({
   userAddress,
   chainId,
   contractAddress,
-  flipsCount,
+  flipCount,
 }: {
   userAddress: `0x${string}`;
   chainId: number;
   contractAddress: `0x${string}`;
-  flipsCount: number;
+  flipCount: number;
 }) => {
   if (
     !userAddress ||
     !contractAddress ||
     typeof chainId !== "number" ||
-    typeof flipsCount !== "number"
+    typeof flipCount !== "number"
   ) {
     throw new Error("Missing or invalid fields", {
-      cause: { userAddress, contractAddress, chainId, flipsCount },
+      cause: { userAddress, contractAddress, chainId, flipCount },
     });
   }
 
@@ -31,7 +31,7 @@ export const getClaimRewardTypedData = async ({
       userAddress,
       contractAddress,
       chainId,
-      flipsCount,
+      flipCount,
     }),
   });
 
@@ -81,3 +81,30 @@ async function safeJson(res: Response) {
     return null;
   }
 }
+
+export const claimReward = async (
+  address: `0x${string}`,
+  signedTypedData: ClaimRewardSignTypedData,
+  signature: string
+) => {
+  const result = await fetch("/api/claim/sign/claim", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      address,
+      signedTypedData,
+      signature,
+    }),
+  });
+
+  const payload = await safeJson(result);
+  if (!result.ok) {
+    throw new Error(payload?.error || "Claim failed", {
+      cause: payload,
+    });
+  }
+
+  return payload;
+};

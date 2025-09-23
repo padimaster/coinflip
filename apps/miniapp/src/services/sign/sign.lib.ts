@@ -27,7 +27,7 @@ export const getClaimRewardSignTypes = (): ClaimRewardSignTypes => {
     ],
     ClaimData: [
       { name: "userAddress", type: "address" },
-      { name: "flipsCount", type: "uint256" },
+      { name: "flipCount", type: "uint256" },
       { name: "minFlipsRequired", type: "uint256" },
       { name: "timestamp", type: "uint256" },
       { name: "nonce", type: "uint256" },
