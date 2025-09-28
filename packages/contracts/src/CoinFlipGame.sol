@@ -68,7 +68,7 @@ contract AccessControl is IAccessControl {
 }
 
 // Main improved coin flip contract
-contract ImprovedCoinFlip is ICoinFlipGame, AccessControl {
+contract CoinFlipGame is ICoinFlipGame, AccessControl {
     // State variables
     uint256 public contractBalance;
     IRandomnessProvider public randomnessProvider;
